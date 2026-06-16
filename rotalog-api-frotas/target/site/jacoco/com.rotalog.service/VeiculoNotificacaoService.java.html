@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>VeiculoNotificacaoService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">RotaLog - API Frotas</a> &gt; <a href="index.source.html" class="el_package">com.rotalog.service</a> &gt; <span class="el_source">VeiculoNotificacaoService.java</span></div><h1>VeiculoNotificacaoService.java</h1><pre class="source lang-java linenums">package com.rotalog.service;
+
+import com.rotalog.domain.Veiculo;
+import com.rotalog.service.NotificacaoClient.NotificacaoResultado;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+/**
+ * VeiculoNotificacaoService — centraliza o envio de notificações relacionadas a veículos.
+ */
+<span class="fc" id="L13">@Slf4j</span>
+@Component
+<span class="fc" id="L15">public class VeiculoNotificacaoService {</span>
+
+    @Autowired
+    private NotificacaoClient notificacaoClient;
+
+    @Value(&quot;${rotalog.alerta.destinatario-gestor}&quot;)
+    private String destinatarioGestor;
+
+    public void notificarNovoVeiculo(Veiculo veiculo) {
+        try {
+<span class="fc" id="L25">            notificacaoClient.enviarNotificacao(</span>
+                &quot;NOVO_VEICULO&quot;,
+                destinatarioGestor,
+<span class="fc" id="L28">                &quot;Novo veiculo cadastrado: &quot; + veiculo.getPlaca() + &quot; - &quot; + veiculo.getModelo()</span>
+            );
+<span class="fc" id="L30">        } catch (Exception e) {</span>
+<span class="fc" id="L31">            log.error(&quot;Erro ao enviar notificacao de novo veiculo: {}&quot;, e.getMessage());</span>
+<span class="fc" id="L32">        }</span>
+<span class="fc" id="L33">    }</span>
+
+    /**
+     * Overload legado — sem motivo, sem retorno de resultado.
+     * Mantido para compatibilidade com chamadas existentes.
+     */
+    public void notificarAlertaManutencao(Veiculo veiculo, Long km) {
+<span class="fc" id="L40">        notificarAlertaManutencao(veiculo, km, null);</span>
+<span class="fc" id="L41">    }</span>
+
+    /**
+     * Overload principal — inclui motivo (KM ou TEMPO) e retorna o resultado da notificacao.
+     * Usado pelo ManutencaoPreventivaService para persistir status e notificacaoId.
+     */
+    public NotificacaoResultado notificarAlertaManutencao(Veiculo veiculo, Long km, String motivo) {
+<span class="pc bpc" id="L48" title="1 of 2 branches missed.">        String mensagemMotivo = &quot;KM&quot;.equals(motivo)</span>
+<span class="nc" id="L49">                ? &quot;Veiculo &quot; + veiculo.getPlaca() + &quot; atingiu &quot; + km + &quot; km desde a ultima manutencao. Agendar manutencao preventiva.&quot;</span>
+<span class="fc" id="L50">                : &quot;Veiculo &quot; + veiculo.getPlaca() + &quot; ultrapassou o intervalo de tempo para manutencao preventiva (km atual: &quot; + km + &quot;).&quot;;</span>
+
+<span class="fc" id="L52">        return notificacaoClient.enviarNotificacao(</span>
+            &quot;ALERTA_MANUTENCAO&quot;,
+            destinatarioGestor,
+            mensagemMotivo
+        );
+    }
+
+    public void notificarManutencaoAgendada(Veiculo veiculo, Long kmLimite) {
+        try {
+<span class="fc" id="L61">            notificacaoClient.enviarNotificacao(</span>
+                &quot;MANUTENCAO_AGENDADA&quot;,
+                destinatarioGestor,
+<span class="fc" id="L64">                &quot;Manutencao preventiva agendada para veiculo &quot; + veiculo.getPlaca() + &quot; em &quot; + kmLimite + &quot; km&quot;</span>
+            );
+<span class="fc" id="L66">        } catch (Exception e) {</span>
+<span class="fc" id="L67">            log.error(&quot;Falha ao notificar agendamento de manutencao: {}&quot;, e.getMessage());</span>
+<span class="fc" id="L68">        }</span>
+<span class="fc" id="L69">    }</span>
+
+    public void notificarDesativacao(Veiculo veiculo) {
+        try {
+<span class="fc" id="L73">            notificacaoClient.enviarNotificacao(</span>
+                &quot;VEICULO_DESATIVADO&quot;,
+                destinatarioGestor,
+<span class="fc" id="L76">                &quot;Veiculo &quot; + veiculo.getPlaca() + &quot; foi desativado&quot;</span>
+            );
+<span class="fc" id="L78">        } catch (Exception e) {</span>
+<span class="fc" id="L79">            log.error(&quot;Falha ao notificar desativacao: {}&quot;, e.getMessage());</span>
+<span class="fc" id="L80">        }</span>
+<span class="fc" id="L81">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

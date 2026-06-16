@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__github__search_repositories",
+      "Bash(mvn -q test)",
+      "Bash(mvn test *)",
+      "Bash(mvn jacoco:report -q)",
+      "Bash(mvn -q verify)",
+      "Bash(npm install *)",
+      "Bash(npm test *)",
+      "Bash(npm run *)",
+      "Bash(pnpm nx *)",
+      "Bash(dotnet build *)",
+      "Bash(mvn -f \"e:/Projetos ALURA - Carreira IA Native/rotalog/rotalog-api-frotas/pom.xml\" compile -q)",
+      "Bash(npm exec *)",
+      "Bash(mvn -f \"e:/Projetos ALURA - Carreira IA Native/rotalog/rotalog-api-frotas/pom.xml\" test -Dtest=ManutencaoPreventivaServiceTest -Dsurefire.failIfNoSpecifiedTests=false)",
+      "Bash(mvn -f \"e:/Projetos ALURA - Carreira IA Native/rotalog/rotalog-api-frotas/pom.xml\" test)",
+      "Bash(dotnet test *)"
+    ]
+  }
+}

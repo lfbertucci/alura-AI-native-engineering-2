@@ -1,0 +1,56 @@
+E:\Projetos ALURA - Carreira IA Native\rotalog\rotalog-api-notificacoes\bin\Debug\net6.0\appsettings.Development.json
+E:\Projetos ALURA - Carreira IA Native\rotalog\rotalog-api-notificacoes\bin\Debug\net6.0\appsettings.json
+E:\Projetos ALURA - Carreira IA Native\rotalog\rotalog-api-notificacoes\bin\Debug\net6.0\api-notificacoes.staticwebassets.endpoints.json
+E:\Projetos ALURA - Carreira IA Native\rotalog\rotalog-api-notificacoes\bin\Debug\net6.0\api-notificacoes.exe
+E:\Projetos ALURA - Carreira IA Native\rotalog\rotalog-api-notificacoes\bin\Debug\net6.0\api-notificacoes.deps.json
+E:\Projetos ALURA - Carreira IA Native\rotalog\rotalog-api-notificacoes\bin\Debug\net6.0\api-notificacoes.runtimeconfig.json
+E:\Projetos ALURA - Carreira IA Native\rotalog\rotalog-api-notificacoes\bin\Debug\net6.0\api-notificacoes.dll
+E:\Projetos ALURA - Carreira IA Native\rotalog\rotalog-api-notificacoes\bin\Debug\net6.0\api-notificacoes.pdb
+E:\Projetos ALURA - Carreira IA Native\rotalog\rotalog-api-notificacoes\bin\Debug\net6.0\Humanizer.dll
+E:\Projetos ALURA - Carreira IA Native\rotalog\rotalog-api-notificacoes\bin\Debug\net6.0\MediatR.dll
+E:\Projetos ALURA - Carreira IA Native\rotalog\rotalog-api-notificacoes\bin\Debug\net6.0\MediatR.Contracts.dll
+E:\Projetos ALURA - Carreira IA Native\rotalog\rotalog-api-notificacoes\bin\Debug\net6.0\MediatR.Extensions.Microsoft.DependencyInjection.dll
+E:\Projetos ALURA - Carreira IA Native\rotalog\rotalog-api-notificacoes\bin\Debug\net6.0\Microsoft.EntityFrameworkCore.dll
+E:\Projetos ALURA - Carreira IA Native\rotalog\rotalog-api-notificacoes\bin\Debug\net6.0\Microsoft.EntityFrameworkCore.Abstractions.dll
+E:\Projetos ALURA - Carreira IA Native\rotalog\rotalog-api-notificacoes\bin\Debug\net6.0\Microsoft.EntityFrameworkCore.Design.dll
+E:\Projetos ALURA - Carreira IA Native\rotalog\rotalog-api-notificacoes\bin\Debug\net6.0\Microsoft.EntityFrameworkCore.Relational.dll
+E:\Projetos ALURA - Carreira IA Native\rotalog\rotalog-api-notificacoes\bin\Debug\net6.0\Microsoft.Extensions.Caching.Memory.dll
+E:\Projetos ALURA - Carreira IA Native\rotalog\rotalog-api-notificacoes\bin\Debug\net6.0\Microsoft.Extensions.DependencyInjection.dll
+E:\Projetos ALURA - Carreira IA Native\rotalog\rotalog-api-notificacoes\bin\Debug\net6.0\Microsoft.OpenApi.dll
+E:\Projetos ALURA - Carreira IA Native\rotalog\rotalog-api-notificacoes\bin\Debug\net6.0\Npgsql.dll
+E:\Projetos ALURA - Carreira IA Native\rotalog\rotalog-api-notificacoes\bin\Debug\net6.0\Npgsql.EntityFrameworkCore.PostgreSQL.dll
+E:\Projetos ALURA - Carreira IA Native\rotalog\rotalog-api-notificacoes\bin\Debug\net6.0\Swashbuckle.AspNetCore.Swagger.dll
+E:\Projetos ALURA - Carreira IA Native\rotalog\rotalog-api-notificacoes\bin\Debug\net6.0\Swashbuckle.AspNetCore.SwaggerGen.dll
+E:\Projetos ALURA - Carreira IA Native\rotalog\rotalog-api-notificacoes\bin\Debug\net6.0\Swashbuckle.AspNetCore.SwaggerUI.dll
+E:\Projetos ALURA - Carreira IA Native\rotalog\rotalog-api-notificacoes\obj\Debug\net6.0\api-notificacoes.csproj.AssemblyReference.cache
+E:\Projetos ALURA - Carreira IA Native\rotalog\rotalog-api-notificacoes\obj\Debug\net6.0\rpswa.dswa.cache.json
+E:\Projetos ALURA - Carreira IA Native\rotalog\rotalog-api-notificacoes\obj\Debug\net6.0\api-notificacoes.GeneratedMSBuildEditorConfig.editorconfig
+E:\Projetos ALURA - Carreira IA Native\rotalog\rotalog-api-notificacoes\obj\Debug\net6.0\api-notificacoes.AssemblyInfoInputs.cache
+E:\Projetos ALURA - Carreira IA Native\rotalog\rotalog-api-notificacoes\obj\Debug\net6.0\api-notificacoes.AssemblyInfo.cs
+E:\Projetos ALURA - Carreira IA Native\rotalog\rotalog-api-notificacoes\obj\Debug\net6.0\api-notificacoes.csproj.CoreCompileInputs.cache
+E:\Projetos ALURA - Carreira IA Native\rotalog\rotalog-api-notificacoes\obj\Debug\net6.0\api-notificacoes.MvcApplicationPartsAssemblyInfo.cs
+E:\Projetos ALURA - Carreira IA Native\rotalog\rotalog-api-notificacoes\obj\Debug\net6.0\api-notificacoes.MvcApplicationPartsAssemblyInfo.cache
+E:\Projetos ALURA - Carreira IA Native\rotalog\rotalog-api-notificacoes\obj\Debug\net6.0\api-notificacoes.sourcelink.json
+E:\Projetos ALURA - Carreira IA Native\rotalog\rotalog-api-notificacoes\obj\Debug\net6.0\rjimswa.dswa.cache.json
+E:\Projetos ALURA - Carreira IA Native\rotalog\rotalog-api-notificacoes\obj\Debug\net6.0\rjsmrazor.dswa.cache.json
+E:\Projetos ALURA - Carreira IA Native\rotalog\rotalog-api-notificacoes\obj\Debug\net6.0\rjsmcshtml.dswa.cache.json
+E:\Projetos ALURA - Carreira IA Native\rotalog\rotalog-api-notificacoes\obj\Debug\net6.0\scopedcss\bundle\api-notificacoes.styles.css
+E:\Projetos ALURA - Carreira IA Native\rotalog\rotalog-api-notificacoes\obj\Debug\net6.0\staticwebassets.build.json
+E:\Projetos ALURA - Carreira IA Native\rotalog\rotalog-api-notificacoes\obj\Debug\net6.0\staticwebassets.build.json.cache
+E:\Projetos ALURA - Carreira IA Native\rotalog\rotalog-api-notificacoes\obj\Debug\net6.0\staticwebassets.development.json
+E:\Projetos ALURA - Carreira IA Native\rotalog\rotalog-api-notificacoes\obj\Debug\net6.0\staticwebassets.build.endpoints.json
+E:\Projetos ALURA - Carreira IA Native\rotalog\rotalog-api-notificacoes\obj\Debug\net6.0\swae.build.ex.cache
+E:\Projetos ALURA - Carreira IA Native\rotalog\rotalog-api-notificacoes\obj\Debug\net6.0\api-noti.D5531EBB.Up2Date
+E:\Projetos ALURA - Carreira IA Native\rotalog\rotalog-api-notificacoes\obj\Debug\net6.0\api-notificacoes.dll
+E:\Projetos ALURA - Carreira IA Native\rotalog\rotalog-api-notificacoes\obj\Debug\net6.0\refint\api-notificacoes.dll
+E:\Projetos ALURA - Carreira IA Native\rotalog\rotalog-api-notificacoes\obj\Debug\net6.0\api-notificacoes.pdb
+E:\Projetos ALURA - Carreira IA Native\rotalog\rotalog-api-notificacoes\obj\Debug\net6.0\api-notificacoes.genruntimeconfig.cache
+E:\Projetos ALURA - Carreira IA Native\rotalog\rotalog-api-notificacoes\obj\Debug\net6.0\ref\api-notificacoes.dll
+C:\Users\Luis-PC\AppData\Local\Temp\notificacoes-build-check\appsettings.Development.json
+C:\Users\Luis-PC\AppData\Local\Temp\notificacoes-build-check\appsettings.json
+C:\Users\Luis-PC\AppData\Local\Temp\notificacoes-build-check\api-notificacoes.staticwebassets.endpoints.json
+C:\Users\Luis-PC\AppData\Local\Temp\notificacoes-build-check\api-notificacoes.exe
+C:\Users\Luis-PC\AppData\Local\Temp\notificacoes-build-check\api-notificacoes.deps.json
+C:\Users\Luis-PC\AppData\Local\Temp\notificacoes-build-check\api-notificacoes.runtimeconfig.json
+C:\Users\Luis-PC\AppData\Local\Temp\notificacoes-build-check\api-notificacoes.dll
+C:\Users\Luis-PC\AppData\Local\Temp\notificacoes-build-check\api-notificacoes.pdb

@@ -1,0 +1,25 @@
+[33m❯[39m Building...
+[32m✔[39m Building...
+[37m[1mInitial chunk files[22m  [2m | [22m[1mNames[22m        [2m | [22m [1mRaw size[22m[2m | [22m[1mEstimated transfer size[22m[39m
+[37m[32mmain-OF65TKFW.js[39m[37m     [2m | [22m[2mmain[22m         [2m | [22m[36m333.14 kB[39m[37m[2m | [22m               [36m79.59 kB[39m[37m[39m
+[37m[32mpolyfills-FFHMD2TL.js[39m[37m[2m | [22m[2mpolyfills[22m    [2m | [22m [36m34.52 kB[39m[37m[2m | [22m               [36m11.28 kB[39m[37m[39m
+[37m[32mstyles-5LTFKRJE.css[39m[37m  [2m | [22m[2mstyles[22m       [2m | [22m[36m476 bytes[39m[37m[2m | [22m              [36m476 bytes[39m[37m[39m
+[37m[39m
+[37m[1m [22m                    [2m | [22m[1mInitial total[22m[2m | [22m[1m368.14 kB[22m[2m | [22m               [1m91.34 kB[22m[39m
+[37m[39m
+[37mApplication bundle generation complete. [10.854 seconds][39m
+[37m[39m
+[1m[33m[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mangular:styles/component:css;2ff1d62d7e438cddd9dae016b0a4266007f240fa8d1731b837ee7936ed061c88;E:/Projetos ALURA - Carreira IA Native/rotalog/rotalog-frontend/apps/painel-admin/src/app/components/dashboard/dashboard.component.ts exceeded maximum budget. Budget 2.05 kB was not met by 239 bytes with a total of 2.29 kB.[0m[39m[22m
+[1m[33m[39m[22m
+[1m[33m[39m[22m
+[1m[33m[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mangular:styles/component:css;840f755a84e1fbb17bfbbfad7fdbf0f1011e678a6738467a7de902af1cef7694;E:/Projetos ALURA - Carreira IA Native/rotalog/rotalog-frontend/apps/painel-admin/src/app/components/veiculos/veiculos.component.ts exceeded maximum budget. Budget 2.05 kB was not met by 735 bytes with a total of 2.78 kB.[0m[39m[22m
+[1m[33m[39m[22m
+[1m[33m[39m[22m
+[1m[33m[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mangular:styles/component:css;670a6aed45cc132ad715b01e2b283474653406064a59829c7b4c3e6fcdd0e2c6;E:/Projetos ALURA - Carreira IA Native/rotalog/rotalog-frontend/apps/painel-admin/src/app/components/motoristas/motoristas.component.ts exceeded maximum budget. Budget 2.05 kB was not met by 206 bytes with a total of 2.25 kB.[0m[39m[22m
+[1m[33m[39m[22m
+[1m[33m[39m[22m
+[1m[33m[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mangular:styles/component:css;f02706b05a467ced8618c11703a0d58f22f0dc2401a9817167b917545bfac9b4;E:/Projetos ALURA - Carreira IA Native/rotalog/rotalog-frontend/apps/painel-admin/src/app/components/entregas/entregas.component.ts exceeded maximum budget. Budget 2.05 kB was not met by 212 bytes with a total of 2.26 kB.[0m[39m[22m
+[1m[33m[39m[22m
+[1m[33m[39m[22m
+[37mOutput location: E:\Projetos ALURA - Carreira IA Native\rotalog\rotalog-frontend\dist\apps\painel-admin[39m
+[37m[39m

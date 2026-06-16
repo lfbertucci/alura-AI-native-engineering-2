@@ -1,0 +1,129 @@
+openapi: 3.0.0
+info:
+  title: RotaLog API
+  version: 1.0.0
+  description: API de logística e entregas
+  # TODO: Versão desatualizada há 2 anos
+
+servers:
+  - url: http://localhost:8080
+    description: API Frotas (Java)
+  - url: http://localhost:3000
+    description: API Entregas (Node)
+  - url: http://localhost:5000
+    description: API Notificações (.NET)
+
+paths:
+  /api/veiculos:
+    get:
+      summary: Listar veículos
+      tags:
+        - Veículos
+      responses:
+        '200':
+          description: Lista de veículos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Veiculo'
+    post:
+      summary: Criar veículo
+      tags:
+        - Veículos
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VeiculoInput'
+      responses:
+        '201':
+          description: Veículo criado
+
+  /api/entregas:
+    get:
+      summary: Listar entregas
+      tags:
+        - Entregas
+      responses:
+        '200':
+          description: Lista de entregas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Entrega'
+
+  # TODO: Endpoints que não existem mais
+  /api/rastreamento/real-time:
+    get:
+      summary: Rastreamento em tempo real (DESCONTINUADO)
+      deprecated: true
+      tags:
+        - Rastreamento
+      responses:
+        '200':
+          description: Dados de rastreamento
+
+  # TODO: Endpoints faltando
+  # /api/notificacoes
+  # /api/manutencao
+  # /api/motoristas/{id}/disponibilidade
+
+components:
+  schemas:
+    Veiculo:
+      type: object
+      properties:
+        id:
+          type: integer
+        placa:
+          type: string
+        modelo:
+          type: string
+        # TODO: Campo desatualizado - backend usa data_cadastro
+        dataCadastro:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum: [ativo, inativo, manutencao]
+        quilometragem:
+          type: number
+
+    VeiculoInput:
+      type: object
+      required:
+        - placa
+        - modelo
+      properties:
+        placa:
+          type: string
+        modelo:
+          type: string
+        ano:
+          type: integer
+
+    Entrega:
+      type: object
+      properties:
+        id:
+          type: integer
+        numero_pedido:
+          type: string
+        status:
+          type: string
+          enum: [pendente, em_transito, entregue, cancelada]
+        driver_name:
+          type: string
+        destination_address:
+          type: string
+        distance_km:
+          type: number
+        estimated_time_minutes:
+          type: integer
+        progress_percentage:
+          type: number

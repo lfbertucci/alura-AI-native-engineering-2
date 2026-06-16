@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ManutencaoService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">RotaLog - API Frotas</a> &gt; <a href="index.source.html" class="el_package">com.rotalog.service</a> &gt; <span class="el_source">ManutencaoService.java</span></div><h1>ManutencaoService.java</h1><pre class="source lang-java linenums">package com.rotalog.service;
+
+import com.rotalog.domain.Manutencao;
+import com.rotalog.domain.Veiculo;
+import com.rotalog.repository.ManutencaoRepository;
+import com.rotalog.repository.VeiculoRepository;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
+
+/**
+ * ManutencaoService - Serviço de gerenciamento de manutenções
+ * 
+ * FIXME: Lógica de negócio misturada com infraestrutura
+ * FIXME: Sem transações explícitas
+ * FIXME: Sem validação de estados
+ */
+<span class="fc" id="L22">@Slf4j</span>
+@Service
+<span class="fc" id="L24">public class ManutencaoService {</span>
+
+    @Autowired // FIXME: deveria usar injeção por construtor
+    private ManutencaoRepository manutencaoRepository;
+
+    @Autowired
+    private VeiculoRepository veiculoRepository;
+
+    @Autowired
+    private NotificacaoClient notificacaoClient;
+
+    public List&lt;Manutencao&gt; listarTodas() {
+<span class="nc" id="L36">        return manutencaoRepository.findAll(); // FIXME: sem paginação</span>
+    }
+
+    public Manutencao buscarPorId(Long id) {
+<span class="fc" id="L40">        return manutencaoRepository.findById(id)</span>
+<span class="fc" id="L41">                .orElseThrow(() -&gt; new RuntimeException(&quot;Manutenção não encontrada: &quot; + id));</span>
+    }
+
+    public List&lt;Manutencao&gt; listarPorVeiculo(Long veiculoId) {
+<span class="nc" id="L45">        return manutencaoRepository.findByVeiculoId(veiculoId);</span>
+    }
+
+    /**
+     * Agendar manutenção
+     * 
+     * FIXME: Sem validação se veículo já tem manutenção pendente
+     * FIXME: Sem transação explícita
+     * FIXME: Atualiza status do veículo diretamente (acoplamento)
+     */
+    public Manutencao agendarManutencao(Long veiculoId, String tipoManutencao, String descricao, BigDecimal custoEstimado) {
+        // Verificar se veículo existe
+<span class="fc" id="L57">        Veiculo veiculo = veiculoRepository.findById(veiculoId)</span>
+<span class="fc" id="L58">                .orElseThrow(() -&gt; new RuntimeException(&quot;Veículo não encontrado: &quot; + veiculoId));</span>
+
+<span class="fc bfc" id="L60" title="All 4 branches covered.">        if (tipoManutencao == null || tipoManutencao.trim().isEmpty()) {</span>
+<span class="fc" id="L61">            throw new RuntimeException(&quot;Tipo de manutenção é obrigatório&quot;);</span>
+        }
+
+        // FIXME: Sem validação se já existe manutenção pendente para o mesmo veículo
+<span class="fc" id="L65">        Manutencao manutencao = new Manutencao();</span>
+<span class="fc" id="L66">        manutencao.setVeiculoId(veiculoId);</span>
+<span class="fc" id="L67">        manutencao.setTipoManutencao(tipoManutencao);</span>
+<span class="fc" id="L68">        manutencao.setDescricao(descricao);</span>
+<span class="fc" id="L69">        manutencao.setCusto(custoEstimado);</span>
+<span class="fc" id="L70">        manutencao.setQuilometragemManutencao(veiculo.getQuilometragem());</span>
+<span class="fc" id="L71">        manutencao.setStatus(&quot;PENDENTE&quot;);</span>
+<span class="fc" id="L72">        manutencao.setDataCriacao(LocalDateTime.now());</span>
+<span class="fc" id="L73">        manutencao.setDataAtualizacao(LocalDateTime.now());</span>
+
+<span class="fc" id="L75">        Manutencao salva = manutencaoRepository.save(manutencao);</span>
+<span class="fc" id="L76">        log.info(&quot;Manutenção agendada: veículo={}, tipo={}&quot;, veiculo.getPlaca(), tipoManutencao);</span>
+
+        // Notificar sobre agendamento
+        try {
+<span class="fc" id="L80">            notificacaoClient.enviarNotificacao(</span>
+                &quot;MANUTENCAO_AGENDADA&quot;,
+                &quot;oficina@rotalog.com&quot;,
+<span class="fc" id="L83">                &quot;Manutenção &quot; + tipoManutencao + &quot; agendada para veículo &quot; + veiculo.getPlaca()</span>
+            );
+<span class="fc" id="L85">        } catch (Exception e) {</span>
+<span class="fc" id="L86">            log.error(&quot;Falha ao notificar agendamento: {}&quot;, e.getMessage());</span>
+<span class="fc" id="L87">        }</span>
+
+<span class="fc" id="L89">        return salva;</span>
+    }
+
+    /**
+     * Iniciar manutenção
+     * 
+     * FIXME: Sem validação de transição de estado
+     * FIXME: Atualiza veículo sem transação
+     */
+    public Manutencao iniciarManutencao(Long manutencaoId) {
+<span class="fc" id="L99">        Manutencao manutencao = buscarPorId(manutencaoId);</span>
+
+        // FIXME: Sem validação de transição de estado (poderia ir de CONCLUIDA para EM_ANDAMENTO)
+<span class="fc bfc" id="L102" title="All 2 branches covered.">        if (!&quot;PENDENTE&quot;.equals(manutencao.getStatus())) {</span>
+<span class="fc" id="L103">            log.warn(&quot;Iniciando manutenção que não está PENDENTE: status={}&quot;, manutencao.getStatus());</span>
+            // FIXME: deveria lançar exceção, mas apenas loga
+        }
+
+<span class="fc" id="L107">        manutencao.setStatus(&quot;EM_ANDAMENTO&quot;);</span>
+<span class="fc" id="L108">        manutencao.setDataManutencao(LocalDateTime.now());</span>
+<span class="fc" id="L109">        manutencao.setDataAtualizacao(LocalDateTime.now());</span>
+
+        // FIXME: Atualiza status do veículo diretamente - acoplamento forte
+<span class="fc" id="L112">        Veiculo veiculo = veiculoRepository.findById(manutencao.getVeiculoId())</span>
+<span class="fc" id="L113">                .orElse(null);</span>
+<span class="pc bpc" id="L114" title="1 of 2 branches missed.">        if (veiculo != null) {</span>
+<span class="fc" id="L115">            veiculo.setStatus(&quot;MANUTENCAO&quot;);</span>
+<span class="fc" id="L116">            veiculo.setDataAtualizacao(LocalDateTime.now());</span>
+<span class="fc" id="L117">            veiculoRepository.save(veiculo); // FIXME: sem transação com a manutenção</span>
+        }
+
+<span class="fc" id="L120">        return manutencaoRepository.save(manutencao);</span>
+    }
+
+    /**
+     * Concluir manutenção
+     * 
+     * FIXME: Sem validação de custo final
+     * FIXME: Sem transação
+     */
+    public Manutencao concluirManutencao(Long manutencaoId, BigDecimal custoFinal) {
+<span class="fc" id="L130">        Manutencao manutencao = buscarPorId(manutencaoId);</span>
+
+<span class="fc" id="L132">        manutencao.setStatus(&quot;CONCLUIDA&quot;);</span>
+<span class="fc bfc" id="L133" title="All 2 branches covered.">        if (custoFinal != null) {</span>
+<span class="fc" id="L134">            manutencao.setCusto(custoFinal);</span>
+        }
+<span class="fc" id="L136">        manutencao.setDataAtualizacao(LocalDateTime.now());</span>
+
+        // Reativar veículo
+<span class="fc" id="L139">        Veiculo veiculo = veiculoRepository.findById(manutencao.getVeiculoId())</span>
+<span class="fc" id="L140">                .orElse(null);</span>
+<span class="fc bfc" id="L141" title="All 2 branches covered.">        if (veiculo != null) {</span>
+<span class="fc" id="L142">            veiculo.setStatus(&quot;ATIVO&quot;);</span>
+<span class="fc" id="L143">            veiculo.setDataAtualizacao(LocalDateTime.now());</span>
+<span class="fc" id="L144">            veiculoRepository.save(veiculo); // FIXME: sem transação</span>
+        }
+
+<span class="fc" id="L147">        Manutencao concluida = manutencaoRepository.save(manutencao);</span>
+
+        // Notificar conclusão
+        try {
+<span class="fc bfc" id="L151" title="All 2 branches covered.">            String placaVeiculo = veiculo != null ? veiculo.getPlaca() : &quot;N/A&quot;;</span>
+<span class="fc" id="L152">            notificacaoClient.enviarNotificacao(</span>
+                &quot;MANUTENCAO_CONCLUIDA&quot;,
+                &quot;gestor@rotalog.com&quot;,
+                &quot;Manutenção concluída para veículo &quot; + placaVeiculo + &quot;. Custo: R$ &quot; + custoFinal
+            );
+<span class="nc" id="L157">        } catch (Exception e) {</span>
+<span class="nc" id="L158">            log.error(&quot;Falha ao notificar conclusão de manutenção: {}&quot;, e.getMessage());</span>
+<span class="fc" id="L159">        }</span>
+
+<span class="fc" id="L161">        return concluida;</span>
+    }
+
+    /**
+     * Cancelar manutenção
+     */
+    public Manutencao cancelarManutencao(Long manutencaoId) {
+<span class="fc" id="L168">        Manutencao manutencao = buscarPorId(manutencaoId);</span>
+<span class="fc" id="L169">        manutencao.setStatus(&quot;CANCELADA&quot;);</span>
+<span class="fc" id="L170">        manutencao.setDataAtualizacao(LocalDateTime.now());</span>
+
+        // Se veículo estava em manutenção, reativar
+<span class="fc" id="L173">        Veiculo veiculo = veiculoRepository.findById(manutencao.getVeiculoId()).orElse(null);</span>
+<span class="pc bpc" id="L174" title="1 of 4 branches missed.">        if (veiculo != null &amp;&amp; &quot;MANUTENCAO&quot;.equals(veiculo.getStatus())) {</span>
+<span class="fc" id="L175">            veiculo.setStatus(&quot;ATIVO&quot;);</span>
+<span class="fc" id="L176">            veiculo.setDataAtualizacao(LocalDateTime.now());</span>
+<span class="fc" id="L177">            veiculoRepository.save(veiculo);</span>
+        }
+
+<span class="fc" id="L180">        log.info(&quot;Manutenção cancelada: id={}&quot;, manutencaoId);</span>
+<span class="fc" id="L181">        return manutencaoRepository.save(manutencao);</span>
+    }
+
+    /**
+     * Listar manutenções pendentes
+     */
+    public List&lt;Manutencao&gt; listarPendentes() {
+<span class="nc" id="L188">        return manutencaoRepository.findByStatus(&quot;PENDENTE&quot;);</span>
+    }
+
+    /**
+     * Obter última manutenção de um veículo
+     */
+    public Manutencao obterUltimaManutencao(Long veiculoId) {
+<span class="fc" id="L195">        Manutencao ultima = manutencaoRepository.findUltimaManutencao(veiculoId);</span>
+<span class="pc bpc" id="L196" title="1 of 2 branches missed.">        if (ultima == null) {</span>
+<span class="fc" id="L197">            throw new RuntimeException(&quot;Nenhuma manutenção encontrada para veículo: &quot; + veiculoId);</span>
+        }
+<span class="nc" id="L199">        return ultima;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

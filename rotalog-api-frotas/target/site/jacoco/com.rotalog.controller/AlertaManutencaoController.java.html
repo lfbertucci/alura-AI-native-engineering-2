@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AlertaManutencaoController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">RotaLog - API Frotas</a> &gt; <a href="index.source.html" class="el_package">com.rotalog.controller</a> &gt; <span class="el_source">AlertaManutencaoController.java</span></div><h1>AlertaManutencaoController.java</h1><pre class="source lang-java linenums">package com.rotalog.controller;
+
+import com.rotalog.domain.AlertaManutencao;
+import com.rotalog.domain.Veiculo;
+import com.rotalog.dto.AlertaManutencaoResponse;
+import com.rotalog.repository.AlertaManutencaoRepository;
+import com.rotalog.repository.VeiculoRepository;
+import com.rotalog.service.ManutencaoPreventivaService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+/**
+ * AlertaManutencaoController — endpoints para consulta e disparo on-demand de alertas de manutenção.
+ * Mapeado em /api/alertas-manutencao (context-path /api definido em application.properties).
+ */
+<span class="fc" id="L22">@Slf4j</span>
+@RestController
+@RequestMapping(&quot;/alertas-manutencao&quot;)
+<span class="fc" id="L25">public class AlertaManutencaoController {</span>
+
+    @Autowired
+    private AlertaManutencaoRepository alertaManutencaoRepository;
+
+    @Autowired
+    private VeiculoRepository veiculoRepository;
+
+    @Autowired
+    private ManutencaoPreventivaService manutencaoPreventivaService;
+
+    /**
+     * GET /api/alertas-manutencao?status=PENDENTE
+     * Lista alertas, opcionalmente filtrados por status.
+     */
+    @GetMapping
+    public ResponseEntity&lt;List&lt;AlertaManutencaoResponse&gt;&gt; listar(
+            @RequestParam(required = false) String status) {
+
+        List&lt;AlertaManutencao&gt; alertas;
+<span class="pc bpc" id="L45" title="1 of 4 branches missed.">        if (status != null &amp;&amp; !status.isBlank()) {</span>
+<span class="fc" id="L46">            alertas = alertaManutencaoRepository.findByStatusNotificacaoOrderByDataAlertaDesc(status);</span>
+        } else {
+<span class="fc" id="L48">            alertas = alertaManutencaoRepository.findAllByOrderByDataAlertaDesc();</span>
+        }
+
+<span class="fc" id="L51">        List&lt;AlertaManutencaoResponse&gt; response = toResponseList(alertas);</span>
+<span class="fc" id="L52">        return ResponseEntity.ok(response);</span>
+    }
+
+    /**
+     * POST /api/alertas-manutencao/verificar
+     * Dispara a varredura on-demand em todos os veículos ATIVO e retorna os alertas gerados.
+     */
+    @PostMapping(&quot;/verificar&quot;)
+    public ResponseEntity&lt;List&lt;AlertaManutencaoResponse&gt;&gt; verificar() {
+<span class="fc" id="L61">        log.info(&quot;Varredura on-demand de alertas de manutencao solicitada.&quot;);</span>
+
+<span class="fc" id="L63">        manutencaoPreventivaService.reprocessarPendentes();</span>
+
+<span class="fc" id="L65">        List&lt;Veiculo&gt; veiculosAtivos = veiculoRepository.findByStatus(&quot;ATIVO&quot;);</span>
+<span class="fc" id="L66">        List&lt;AlertaManutencao&gt; gerados = new ArrayList&lt;&gt;();</span>
+
+<span class="fc bfc" id="L68" title="All 2 branches covered.">        for (Veiculo veiculo : veiculosAtivos) {</span>
+<span class="fc" id="L69">            manutencaoPreventivaService.verificarEAlertar(veiculo)</span>
+<span class="fc" id="L70">                    .ifPresent(gerados::add);</span>
+<span class="fc" id="L71">        }</span>
+
+<span class="fc" id="L73">        log.info(&quot;Varredura concluida: {} alerta(s) gerado(s).&quot;, gerados.size());</span>
+<span class="fc" id="L74">        return ResponseEntity.ok(toResponseList(gerados));</span>
+    }
+
+    // -------------------------------------------------------------------------
+    // Helpers
+    // -------------------------------------------------------------------------
+
+    private List&lt;AlertaManutencaoResponse&gt; toResponseList(List&lt;AlertaManutencao&gt; alertas) {
+<span class="fc" id="L82">        List&lt;AlertaManutencaoResponse&gt; lista = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L83" title="All 2 branches covered.">        for (AlertaManutencao alerta : alertas) {</span>
+<span class="fc" id="L84">            Optional&lt;Veiculo&gt; veiculoOpt = veiculoRepository.findById(alerta.getVeiculoId());</span>
+<span class="fc" id="L85">            String placa = veiculoOpt.map(Veiculo::getPlaca).orElse(&quot;N/A&quot;);</span>
+<span class="fc" id="L86">            String modelo = veiculoOpt.map(Veiculo::getModelo).orElse(&quot;N/A&quot;);</span>
+
+<span class="fc" id="L88">            lista.add(new AlertaManutencaoResponse(</span>
+<span class="fc" id="L89">                    alerta.getId(),</span>
+<span class="fc" id="L90">                    alerta.getVeiculoId(),</span>
+                    placa,
+                    modelo,
+<span class="fc" id="L93">                    alerta.getQuilometragemAlerta(),</span>
+<span class="fc" id="L94">                    alerta.getMotivo(),</span>
+<span class="fc" id="L95">                    alerta.getDataAlerta(),</span>
+<span class="fc" id="L96">                    alerta.getStatusNotificacao()</span>
+            ));
+<span class="fc" id="L98">        }</span>
+<span class="fc" id="L99">        return lista;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

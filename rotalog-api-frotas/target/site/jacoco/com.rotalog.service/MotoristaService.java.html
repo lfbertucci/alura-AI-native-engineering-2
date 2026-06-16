@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MotoristaService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">RotaLog - API Frotas</a> &gt; <a href="index.source.html" class="el_package">com.rotalog.service</a> &gt; <span class="el_source">MotoristaService.java</span></div><h1>MotoristaService.java</h1><pre class="source lang-java linenums">package com.rotalog.service;
+
+import com.rotalog.domain.Motorista;
+import com.rotalog.repository.MotoristaRepository;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+
+/**
+ * MotoristaService - Serviço de gerenciamento de motoristas
+ * 
+ * FIXME: Sem validação de CNH real
+ * FIXME: Sem integração com DETRAN
+ * FIXME: Sem controle de disponibilidade
+ */
+<span class="nc" id="L20">@Slf4j</span>
+@Service
+<span class="nc" id="L22">public class MotoristaService {</span>
+
+    @Autowired // FIXME: deveria usar injeção por construtor
+    private MotoristaRepository motoristaRepository;
+
+    @Autowired
+    private NotificacaoClient notificacaoClient;
+
+    public List&lt;Motorista&gt; listarTodos() {
+<span class="nc" id="L31">        return motoristaRepository.findAll(); // FIXME: sem paginação</span>
+    }
+
+    public Motorista buscarPorId(Long id) {
+<span class="nc" id="L35">        return motoristaRepository.findById(id)</span>
+<span class="nc" id="L36">                .orElseThrow(() -&gt; new RuntimeException(&quot;Motorista não encontrado: &quot; + id));</span>
+    }
+
+    public Motorista buscarPorCnh(String cnh) {
+<span class="nc" id="L40">        return motoristaRepository.findByCnh(cnh)</span>
+<span class="nc" id="L41">                .orElseThrow(() -&gt; new RuntimeException(&quot;Motorista não encontrado com CNH: &quot; + cnh));</span>
+    }
+
+    /**
+     * Cadastra novo motorista
+     * 
+     * FIXME: Validação de CNH é apenas tamanho
+     * FIXME: Sem verificação de duplicidade por nome
+     */
+    public Motorista cadastrarMotorista(String nome, String cnh, String categoriaCnh, LocalDate vencimentoCnh) {
+<span class="nc bnc" id="L51" title="All 4 branches missed.">        if (nome == null || nome.trim().isEmpty()) {</span>
+<span class="nc" id="L52">            throw new RuntimeException(&quot;Nome é obrigatório&quot;);</span>
+        }
+
+<span class="nc bnc" id="L55" title="All 4 branches missed.">        if (cnh == null || cnh.length() != 11) {</span>
+<span class="nc" id="L56">            throw new RuntimeException(&quot;CNH deve ter 11 dígitos&quot;); // FIXME: validação fraca</span>
+        }
+
+        // Verificar duplicidade
+<span class="nc bnc" id="L60" title="All 2 branches missed.">        if (motoristaRepository.findByCnh(cnh).isPresent()) {</span>
+<span class="nc" id="L61">            throw new RuntimeException(&quot;Motorista com CNH &quot; + cnh + &quot; já existe&quot;);</span>
+        }
+
+        // FIXME: Sem verificação se CNH está vencida no momento do cadastro
+<span class="nc bnc" id="L65" title="All 4 branches missed.">        if (vencimentoCnh != null &amp;&amp; vencimentoCnh.isBefore(LocalDate.now())) {</span>
+<span class="nc" id="L66">            log.warn(&quot;Cadastrando motorista com CNH vencida: {}&quot;, cnh); // apenas log, não impede</span>
+        }
+
+<span class="nc" id="L69">        Motorista motorista = new Motorista();</span>
+<span class="nc" id="L70">        motorista.setNome(nome);</span>
+<span class="nc" id="L71">        motorista.setCnh(cnh);</span>
+<span class="nc bnc" id="L72" title="All 2 branches missed.">        motorista.setCategoriaCnh(categoriaCnh != null ? categoriaCnh : &quot;B&quot;); // FIXME: default hardcoded</span>
+<span class="nc" id="L73">        motorista.setVencimentoCnh(vencimentoCnh);</span>
+<span class="nc" id="L74">        motorista.setStatus(&quot;ATIVO&quot;);</span>
+<span class="nc" id="L75">        motorista.setDataCadastro(LocalDateTime.now());</span>
+<span class="nc" id="L76">        motorista.setDataAtualizacao(LocalDateTime.now());</span>
+
+<span class="nc" id="L78">        Motorista salvo = motoristaRepository.save(motorista);</span>
+<span class="nc" id="L79">        log.info(&quot;Motorista cadastrado: {} - CNH: {}&quot;, salvo.getNome(), salvo.getCnh());</span>
+
+        try {
+<span class="nc" id="L82">            notificacaoClient.enviarNotificacao(</span>
+                &quot;NOVO_MOTORISTA&quot;,
+                &quot;rh@rotalog.com&quot;,
+<span class="nc" id="L85">                &quot;Novo motorista cadastrado: &quot; + salvo.getNome()</span>
+            );
+<span class="nc" id="L87">        } catch (Exception e) {</span>
+<span class="nc" id="L88">            log.error(&quot;Falha ao notificar cadastro de motorista: {}&quot;, e.getMessage());</span>
+<span class="nc" id="L89">        }</span>
+
+<span class="nc" id="L91">        return salvo;</span>
+    }
+
+    /**
+     * Atualiza dados do motorista
+     */
+    public Motorista atualizarMotorista(Long id, String nome, String categoriaCnh, LocalDate vencimentoCnh) {
+<span class="nc" id="L98">        Motorista motorista = buscarPorId(id);</span>
+
+<span class="nc bnc" id="L100" title="All 4 branches missed.">        if (nome != null &amp;&amp; !nome.trim().isEmpty()) {</span>
+<span class="nc" id="L101">            motorista.setNome(nome);</span>
+        }
+<span class="nc bnc" id="L103" title="All 2 branches missed.">        if (categoriaCnh != null) {</span>
+<span class="nc" id="L104">            motorista.setCategoriaCnh(categoriaCnh);</span>
+        }
+<span class="nc bnc" id="L106" title="All 2 branches missed.">        if (vencimentoCnh != null) {</span>
+<span class="nc" id="L107">            motorista.setVencimentoCnh(vencimentoCnh);</span>
+        }
+
+<span class="nc" id="L110">        motorista.setDataAtualizacao(LocalDateTime.now());</span>
+<span class="nc" id="L111">        return motoristaRepository.save(motorista);</span>
+    }
+
+    /**
+     * Lista motoristas por status
+     */
+    public List&lt;Motorista&gt; listarPorStatus(String status) {
+<span class="nc" id="L118">        return motoristaRepository.findByStatus(status);</span>
+    }
+
+    /**
+     * Lista motoristas com CNH vencida
+     * 
+     * FIXME: Deveria enviar notificação automática
+     */
+    public List&lt;Motorista&gt; listarComCnhVencida() {
+<span class="nc" id="L127">        List&lt;Motorista&gt; vencidos = motoristaRepository.findMotoristasComCnhVencida();</span>
+        
+        // FIXME: Notificação em loop - pode gerar muitas chamadas HTTP
+<span class="nc bnc" id="L130" title="All 2 branches missed.">        for (Motorista m : vencidos) {</span>
+            try {
+<span class="nc" id="L132">                notificacaoClient.enviarNotificacao(</span>
+                    &quot;CNH_VENCIDA&quot;,
+                    &quot;rh@rotalog.com&quot;,
+<span class="nc" id="L135">                    &quot;Motorista &quot; + m.getNome() + &quot; está com CNH vencida desde &quot; + m.getVencimentoCnh()</span>
+                );
+<span class="nc" id="L137">            } catch (Exception e) {</span>
+<span class="nc" id="L138">                log.error(&quot;Falha ao notificar CNH vencida do motorista {}: {}&quot;, m.getNome(), e.getMessage());</span>
+<span class="nc" id="L139">            }</span>
+<span class="nc" id="L140">        }</span>
+
+<span class="nc" id="L142">        return vencidos;</span>
+    }
+
+    /**
+     * Desativa motorista
+     */
+    public Motorista desativarMotorista(Long id) {
+<span class="nc" id="L149">        Motorista motorista = buscarPorId(id);</span>
+<span class="nc" id="L150">        motorista.setStatus(&quot;INATIVO&quot;);</span>
+<span class="nc" id="L151">        motorista.setDataAtualizacao(LocalDateTime.now());</span>
+
+<span class="nc" id="L153">        log.info(&quot;Motorista desativado: {}&quot;, motorista.getNome());</span>
+<span class="nc" id="L154">        return motoristaRepository.save(motorista);</span>
+    }
+
+    /**
+     * Reativa motorista
+     */
+    public Motorista reativarMotorista(Long id) {
+<span class="nc" id="L161">        Motorista motorista = buscarPorId(id);</span>
+<span class="nc" id="L162">        motorista.setStatus(&quot;ATIVO&quot;);</span>
+<span class="nc" id="L163">        motorista.setDataAtualizacao(LocalDateTime.now());</span>
+
+<span class="nc" id="L165">        log.info(&quot;Motorista reativado: {}&quot;, motorista.getNome());</span>
+<span class="nc" id="L166">        return motoristaRepository.save(motorista);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

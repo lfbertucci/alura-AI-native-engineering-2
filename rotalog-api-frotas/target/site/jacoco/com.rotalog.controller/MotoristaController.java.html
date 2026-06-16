@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MotoristaController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">RotaLog - API Frotas</a> &gt; <a href="index.source.html" class="el_package">com.rotalog.controller</a> &gt; <span class="el_source">MotoristaController.java</span></div><h1>MotoristaController.java</h1><pre class="source lang-java linenums">package com.rotalog.controller;
+
+import com.rotalog.domain.Motorista;
+import com.rotalog.dto.MotoristaRequest;
+import com.rotalog.service.MotoristaService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * MotoristaController - REST controller para gerenciamento de motoristas
+ * 
+ * FIXME: Mesmo padrão de tratamento de erro do VeiculoController (copy-paste)
+ * FIXME: Sem @ControllerAdvice
+ * FIXME: Retornando entidade diretamente
+ */
+<span class="nc" id="L23">@Slf4j</span>
+@RestController
+@RequestMapping(&quot;/motoristas&quot;)
+<span class="nc" id="L26">public class MotoristaController {</span>
+
+    @Autowired
+    private MotoristaService motoristaService;
+
+    @GetMapping
+    public ResponseEntity&lt;List&lt;Motorista&gt;&gt; listarTodos() {
+<span class="nc" id="L33">        return ResponseEntity.ok(motoristaService.listarTodos());</span>
+    }
+
+    @GetMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;?&gt; buscarPorId(@PathVariable Long id) {
+        try {
+<span class="nc" id="L39">            return ResponseEntity.ok(motoristaService.buscarPorId(id));</span>
+<span class="nc" id="L40">        } catch (RuntimeException e) {</span>
+<span class="nc" id="L41">            Map&lt;String, String&gt; error = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L42">            error.put(&quot;erro&quot;, e.getMessage());</span>
+<span class="nc" id="L43">            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);</span>
+        }
+    }
+
+    @GetMapping(&quot;/cnh/{cnh}&quot;)
+    public ResponseEntity&lt;?&gt; buscarPorCnh(@PathVariable String cnh) {
+        try {
+<span class="nc" id="L50">            return ResponseEntity.ok(motoristaService.buscarPorCnh(cnh));</span>
+<span class="nc" id="L51">        } catch (RuntimeException e) {</span>
+<span class="nc" id="L52">            Map&lt;String, String&gt; error = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L53">            error.put(&quot;erro&quot;, e.getMessage());</span>
+<span class="nc" id="L54">            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);</span>
+        }
+    }
+
+    @GetMapping(&quot;/status/{status}&quot;)
+    public ResponseEntity&lt;List&lt;Motorista&gt;&gt; listarPorStatus(@PathVariable String status) {
+<span class="nc" id="L60">        return ResponseEntity.ok(motoristaService.listarPorStatus(status));</span>
+    }
+
+    @GetMapping(&quot;/cnh-vencida&quot;)
+    public ResponseEntity&lt;List&lt;Motorista&gt;&gt; listarComCnhVencida() {
+<span class="nc" id="L65">        return ResponseEntity.ok(motoristaService.listarComCnhVencida());</span>
+    }
+
+    @PostMapping
+    public ResponseEntity&lt;?&gt; cadastrarMotorista(@RequestBody MotoristaRequest request) {
+        try {
+<span class="nc" id="L71">            Motorista motorista = motoristaService.cadastrarMotorista(</span>
+<span class="nc" id="L72">                request.getNome(),</span>
+<span class="nc" id="L73">                request.getCnh(),</span>
+<span class="nc" id="L74">                request.getCategoriaCnh(),</span>
+<span class="nc" id="L75">                request.getVencimentoCnh()</span>
+            );
+<span class="nc" id="L77">            return ResponseEntity.status(HttpStatus.CREATED).body(motorista);</span>
+<span class="nc" id="L78">        } catch (RuntimeException e) {</span>
+<span class="nc" id="L79">            Map&lt;String, String&gt; error = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L80">            error.put(&quot;erro&quot;, e.getMessage());</span>
+<span class="nc" id="L81">            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);</span>
+        }
+    }
+
+    @PutMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;?&gt; atualizarMotorista(@PathVariable Long id, @RequestBody MotoristaRequest request) {
+        try {
+<span class="nc" id="L88">            Motorista motorista = motoristaService.atualizarMotorista(</span>
+                id,
+<span class="nc" id="L90">                request.getNome(),</span>
+<span class="nc" id="L91">                request.getCategoriaCnh(),</span>
+<span class="nc" id="L92">                request.getVencimentoCnh()</span>
+            );
+<span class="nc" id="L94">            return ResponseEntity.ok(motorista);</span>
+<span class="nc" id="L95">        } catch (RuntimeException e) {</span>
+<span class="nc" id="L96">            Map&lt;String, String&gt; error = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L97">            error.put(&quot;erro&quot;, e.getMessage());</span>
+<span class="nc" id="L98">            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);</span>
+        }
+    }
+
+    @PatchMapping(&quot;/{id}/desativar&quot;)
+    public ResponseEntity&lt;?&gt; desativarMotorista(@PathVariable Long id) {
+        try {
+<span class="nc" id="L105">            return ResponseEntity.ok(motoristaService.desativarMotorista(id));</span>
+<span class="nc" id="L106">        } catch (RuntimeException e) {</span>
+<span class="nc" id="L107">            Map&lt;String, String&gt; error = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L108">            error.put(&quot;erro&quot;, e.getMessage());</span>
+<span class="nc" id="L109">            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);</span>
+        }
+    }
+
+    @PatchMapping(&quot;/{id}/reativar&quot;)
+    public ResponseEntity&lt;?&gt; reativarMotorista(@PathVariable Long id) {
+        try {
+<span class="nc" id="L116">            return ResponseEntity.ok(motoristaService.reativarMotorista(id));</span>
+<span class="nc" id="L117">        } catch (RuntimeException e) {</span>
+<span class="nc" id="L118">            Map&lt;String, String&gt; error = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L119">            error.put(&quot;erro&quot;, e.getMessage());</span>
+<span class="nc" id="L120">            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>HealthCheckController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">RotaLog - API Frotas</a> &gt; <a href="index.source.html" class="el_package">com.rotalog.controller</a> &gt; <span class="el_source">HealthCheckController.java</span></div><h1>HealthCheckController.java</h1><pre class="source lang-java linenums">package com.rotalog.controller;
+
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
+
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * HealthCheckController - Endpoint de health check
+ * 
+ * FIXME: Deveria usar Spring Actuator em vez de controller manual
+ * FIXME: Sem métricas
+ * FIXME: Sem readiness/liveness probes separados
+ */
+<span class="nc" id="L22">@Slf4j</span>
+@RestController
+@RequestMapping(&quot;/health&quot;)
+<span class="nc" id="L25">public class HealthCheckController {</span>
+
+    // FIXME: RestTemplate criado manualmente
+<span class="nc" id="L28">    private final RestTemplate restTemplate = new RestTemplate();</span>
+
+    @GetMapping
+    public ResponseEntity&lt;Map&lt;String, Object&gt;&gt; healthCheck() {
+<span class="nc" id="L32">        Map&lt;String, Object&gt; health = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L33">        health.put(&quot;service&quot;, &quot;api-frotas&quot;);</span>
+<span class="nc" id="L34">        health.put(&quot;status&quot;, &quot;UP&quot;);</span>
+<span class="nc" id="L35">        health.put(&quot;timestamp&quot;, LocalDateTime.now().toString());</span>
+<span class="nc" id="L36">        health.put(&quot;version&quot;, &quot;1.0-SNAPSHOT&quot;); // FIXME: hardcoded</span>
+
+        // Verificar dependências
+<span class="nc" id="L39">        Map&lt;String, String&gt; dependencies = new HashMap&lt;&gt;();</span>
+        
+        // Check api-entregas
+        try {
+<span class="nc" id="L43">            restTemplate.getForEntity(&quot;http://localhost:3000/api/health&quot;, String.class);</span>
+<span class="nc" id="L44">            dependencies.put(&quot;api-entregas&quot;, &quot;UP&quot;);</span>
+<span class="nc" id="L45">        } catch (Exception e) {</span>
+<span class="nc" id="L46">            dependencies.put(&quot;api-entregas&quot;, &quot;DOWN&quot;);</span>
+<span class="nc" id="L47">        }</span>
+
+        // Check api-notificacoes
+        try {
+<span class="nc" id="L51">            restTemplate.getForEntity(&quot;http://localhost:5000/api/health&quot;, String.class);</span>
+<span class="nc" id="L52">            dependencies.put(&quot;api-notificacoes&quot;, &quot;UP&quot;);</span>
+<span class="nc" id="L53">        } catch (Exception e) {</span>
+<span class="nc" id="L54">            dependencies.put(&quot;api-notificacoes&quot;, &quot;DOWN&quot;);</span>
+<span class="nc" id="L55">        }</span>
+
+<span class="nc" id="L57">        health.put(&quot;dependencies&quot;, dependencies);</span>
+<span class="nc" id="L58">        return ResponseEntity.ok(health);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

@@ -1,0 +1,43 @@
+{
+  "name": "rastreamento",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "apps/rastreamento/src",
+  "prefix": "app",
+  "targets": {
+    "build": {
+      "executor": "@nx/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/rastreamento",
+        "index": "apps/rastreamento/src/index.html",
+        "main": "apps/rastreamento/src/main.tsx",
+
+        "tsConfig": "apps/rastreamento/tsconfig.app.json",
+        "assets": ["apps/rastreamento/src/favicon.ico", "apps/rastreamento/src/assets"],
+        "styles": ["apps/rastreamento/src/styles.css"],
+        "scripts": [],
+        "webpackConfig": "@nx/react/plugins/webpack"
+      }
+    },
+    "serve": {
+      "executor": "@nx/webpack:dev-server",
+      "configurations": {
+        "development": {
+          "buildTarget": "rastreamento:build",
+          "hmr": true,
+          "port": 3001
+        }
+      },
+      "defaultConfiguration": "development"
+    },
+    "lint": {
+      "executor": "@nx/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/rastreamento/**/*.{ts,tsx,js,jsx}"]
+      }
+    }
+  },
+  "tags": []
+}

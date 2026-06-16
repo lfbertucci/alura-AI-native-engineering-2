@@ -1,0 +1,27 @@
+cd "e:/Projetos ALURA - Carreira IA Native/rotalog"
+
+rotalog-workspace:
+	cd "e:/Projetos ALURA - Carreira IA Native/rotalog/rotalog-workspace"
+	docker-compose down [-v]
+	docker-compose up -d postgres
+	
+rotalog-api-frotas:
+	cd "e:/Projetos ALURA - Carreira IA Native/rotalog/rotalog-api-frotas"
+	mvn spring-boot:run	
+	http://localhost:8080/api/health
+	
+rotalog-api-entregas:
+	cd "e:/Projetos ALURA - Carreira IA Native/rotalog/rotalog-api-entregas"
+	npm start
+	http://localhost:3000/api/health
+	
+rotalog-api-notificacoes:
+	cd "e:/Projetos ALURA - Carreira IA Native/rotalog/rotalog-api-notificacoes"
+	dotnet run
+	http://localhost:5000/api/health
+	
+rotalog-frontend:	
+	cd "e:/Projetos ALURA - Carreira IA Native/rotalog/rotalog-frontend"
+	nx run-many --target=serve --projects=painel-admin,rastreamento
+	http://localhost:4200/
+	http://localhost:3001/

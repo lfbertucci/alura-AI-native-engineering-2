@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>VeiculoService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">RotaLog - API Frotas</a> &gt; <a href="index.source.html" class="el_package">com.rotalog.service</a> &gt; <span class="el_source">VeiculoService.java</span></div><h1>VeiculoService.java</h1><pre class="source lang-java linenums">package com.rotalog.service;
+
+import com.rotalog.domain.Veiculo;
+import com.rotalog.repository.VeiculoRepository;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+
+/**
+ * VeiculoService - Coordenador de CRUD de veículos.
+ * Delega validação, notificação e manutenção preventiva a colaboradores coesos.
+ */
+<span class="fc" id="L17">@Slf4j</span>
+@Service
+<span class="fc" id="L19">public class VeiculoService {</span>
+
+    @Autowired
+    private VeiculoRepository veiculoRepository;
+
+    @Autowired
+    private VeiculoValidator validator;
+
+    @Autowired
+    private VeiculoNotificacaoService notificacaoService;
+
+    @Autowired
+    private ManutencaoPreventivaService manutencaoPreventivaService;
+
+    public List&lt;Veiculo&gt; listarTodos() {
+<span class="fc" id="L34">        log.info(&quot;Listando todos os veículos&quot;);</span>
+<span class="fc" id="L35">        return veiculoRepository.findAll();</span>
+    }
+
+    public Veiculo buscarPorId(Long id) {
+<span class="fc" id="L39">        return veiculoRepository.findById(id)</span>
+<span class="fc" id="L40">                .orElseThrow(() -&gt; new RuntimeException(&quot;Veículo não encontrado: &quot; + id));</span>
+    }
+
+    public Veiculo buscarPorPlaca(String placa) {
+<span class="fc" id="L44">        return veiculoRepository.findByPlaca(placa)</span>
+<span class="fc" id="L45">                .orElseThrow(() -&gt; new RuntimeException(&quot;Veículo não encontrado com placa: &quot; + placa));</span>
+    }
+
+    public Veiculo registrarVeiculo(String placa, String modelo, Integer anoFabricacao) {
+<span class="fc" id="L49">        validator.validarPlaca(placa);</span>
+
+<span class="fc" id="L51">        Optional&lt;Veiculo&gt; existente = veiculoRepository.findByPlaca(placa);</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">        if (existente.isPresent()) {</span>
+<span class="fc" id="L53">            throw new RuntimeException(&quot;Veículo com placa &quot; + placa + &quot; já existe&quot;);</span>
+        }
+
+<span class="fc" id="L56">        validator.validarModelo(modelo);</span>
+<span class="fc" id="L57">        validator.validarAnoFabricacao(anoFabricacao);</span>
+
+<span class="fc" id="L59">        Veiculo veiculo = new Veiculo();</span>
+<span class="fc" id="L60">        veiculo.setPlaca(placa.toUpperCase());</span>
+<span class="fc" id="L61">        veiculo.setModelo(modelo);</span>
+<span class="fc" id="L62">        veiculo.setAnoFabricacao(anoFabricacao);</span>
+<span class="fc" id="L63">        veiculo.setStatus(&quot;ATIVO&quot;);</span>
+<span class="fc" id="L64">        veiculo.setQuilometragem(0L);</span>
+<span class="fc" id="L65">        veiculo.setDataCadastro(LocalDateTime.now());</span>
+<span class="fc" id="L66">        veiculo.setDataAtualizacao(LocalDateTime.now());</span>
+
+<span class="fc" id="L68">        Veiculo salvo = veiculoRepository.save(veiculo);</span>
+<span class="fc" id="L69">        log.info(&quot;Veículo registrado: {} - {}&quot;, salvo.getPlaca(), salvo.getModelo());</span>
+
+<span class="fc" id="L71">        notificacaoService.notificarNovoVeiculo(salvo);</span>
+
+<span class="fc" id="L73">        return salvo;</span>
+    }
+
+    public Veiculo atualizarVeiculo(Long id, String modelo, Integer anoFabricacao, Long quilometragem) {
+<span class="fc" id="L77">        Veiculo veiculo = buscarPorId(id);</span>
+
+<span class="fc bfc" id="L79" title="All 4 branches covered.">        if (modelo != null &amp;&amp; !modelo.isEmpty()) {</span>
+<span class="fc" id="L80">            veiculo.setModelo(modelo);</span>
+        }
+<span class="fc bfc" id="L82" title="All 2 branches covered.">        if (anoFabricacao != null) {</span>
+<span class="fc" id="L83">            veiculo.setAnoFabricacao(anoFabricacao);</span>
+        }
+<span class="fc bfc" id="L85" title="All 2 branches covered.">        if (quilometragem != null) {</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">            if (quilometragem &lt; veiculo.getQuilometragem()) {</span>
+<span class="fc" id="L87">                log.warn(&quot;Tentativa de reduzir quilometragem do veículo {}: {} -&gt; {}&quot;,</span>
+<span class="fc" id="L88">                        id, veiculo.getQuilometragem(), quilometragem);</span>
+            }
+<span class="fc" id="L90">            veiculo.setQuilometragem(quilometragem);</span>
+        }
+
+<span class="fc" id="L93">        veiculo.setDataAtualizacao(LocalDateTime.now());</span>
+<span class="fc" id="L94">        return veiculoRepository.save(veiculo);</span>
+    }
+
+    public Veiculo atualizarQuilometragem(Long veiculoId, Long novaQuilometragem) {
+<span class="fc" id="L98">        Veiculo veiculo = buscarPorId(veiculoId);</span>
+
+<span class="fc" id="L100">        validator.validarQuilometragem(novaQuilometragem);</span>
+
+<span class="fc bfc" id="L102" title="All 2 branches covered.">        if (novaQuilometragem &lt; veiculo.getQuilometragem()) {</span>
+<span class="fc" id="L103">            log.warn(&quot;Quilometragem informada ({}) é menor que a atual ({})&quot;, novaQuilometragem, veiculo.getQuilometragem());</span>
+        }
+
+<span class="fc" id="L106">        veiculo.setQuilometragem(novaQuilometragem);</span>
+<span class="fc" id="L107">        veiculo.setDataAtualizacao(LocalDateTime.now());</span>
+
+<span class="fc" id="L109">        Veiculo atualizado = veiculoRepository.save(veiculo);</span>
+
+<span class="fc" id="L111">        manutencaoPreventivaService.verificarEAlertar(atualizado);</span>
+
+<span class="fc" id="L113">        return atualizado;</span>
+    }
+
+    public List&lt;Veiculo&gt; obterVeiculosPorStatus(String status) {
+<span class="fc bfc" id="L117" title="All 6 branches covered.">        if (!status.equals(&quot;ATIVO&quot;) &amp;&amp; !status.equals(&quot;INATIVO&quot;) &amp;&amp; !status.equals(&quot;MANUTENCAO&quot;)) {</span>
+<span class="fc" id="L118">            throw new RuntimeException(&quot;Status inválido: &quot; + status);</span>
+        }
+<span class="fc" id="L120">        return veiculoRepository.findByStatus(status);</span>
+    }
+
+    public Veiculo desativarVeiculo(Long veiculoId) {
+<span class="fc" id="L124">        Veiculo veiculo = buscarPorId(veiculoId);</span>
+<span class="fc" id="L125">        veiculo.setStatus(&quot;INATIVO&quot;);</span>
+<span class="fc" id="L126">        veiculo.setDataAtualizacao(LocalDateTime.now());</span>
+
+<span class="fc" id="L128">        Veiculo desativado = veiculoRepository.save(veiculo);</span>
+<span class="fc" id="L129">        log.info(&quot;Veículo desativado: {}&quot;, veiculo.getPlaca());</span>
+
+<span class="fc" id="L131">        notificacaoService.notificarDesativacao(veiculo);</span>
+
+<span class="fc" id="L133">        return desativado;</span>
+    }
+
+    public Veiculo reativarVeiculo(Long veiculoId) {
+<span class="fc" id="L137">        Veiculo veiculo = buscarPorId(veiculoId);</span>
+<span class="fc" id="L138">        veiculo.setStatus(&quot;ATIVO&quot;);</span>
+<span class="fc" id="L139">        veiculo.setDataAtualizacao(LocalDateTime.now());</span>
+
+<span class="fc" id="L141">        log.info(&quot;Veículo reativado: {}&quot;, veiculo.getPlaca());</span>
+<span class="fc" id="L142">        return veiculoRepository.save(veiculo);</span>
+    }
+
+    public void sincronizarComSistemaExterno() {
+<span class="fc" id="L146">        log.info(&quot;Sincronização com sistema externo iniciada&quot;);</span>
+        // TODO: Implementar integração real
+        // TODO: Adicionar retry logic
+        // TODO: Adicionar circuit breaker
+<span class="fc" id="L150">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

@@ -1,0 +1,38 @@
+{
+  "name": "rotalog-api-entregas",
+  "version": "1.0.0",
+  "description": "RotaLog - Delivery management microservice (Legacy codebase for Alura course)",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "test": "jest",
+    "test:coverage": "jest --coverage",
+    "db:migrate": "psql -h localhost -U rotalog_admin -d rotalog -f src/config/migration.sql",
+    "db:seed": "psql -h localhost -U rotalog_admin -d rotalog -f src/config/seed.sql"
+  },
+  "keywords": [
+    "rotalog",
+    "entregas",
+    "delivery",
+    "legacy"
+  ],
+  "author": "RotaLog Dev Team",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.3",
+    "pg": "^8.9.0",
+    "pg-hstore": "^2.3.4",
+    "sequelize": "^6.28.0",
+    "winston": "^3.19.0",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "nodemon": "^2.0.20",
+    "supertest": "^7.2.2"
+  }
+}

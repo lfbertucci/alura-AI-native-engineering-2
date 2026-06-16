@@ -1,0 +1,11 @@
+{
+  "name": "painel-admin-e2e",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "apps/painel-admin-e2e/src",
+  "implicitDependencies": [
+    "painel-admin"
+  ],
+  "// targets": "to see all targets run: nx show project painel-admin-e2e --web",
+  "targets": {}
+}

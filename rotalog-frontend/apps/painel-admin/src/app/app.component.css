@@ -1,0 +1,6 @@
+/* TODO: CSS global - deveria usar variáveis CSS ou SCSS */
+.main-wrapper {
+  margin-left: 250px;
+  min-height: 100vh;
+  background: #f0f2f5;
+}

@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage generated="1781450666988" clover="3.2.0">
+  <project timestamp="1781450666988" name="All files">
+    <metrics statements="207" coveredstatements="207" conditionals="83" coveredconditionals="83" methods="30" coveredmethods="30" elements="320" coveredelements="320" complexity="0" loc="207" ncloc="207" packages="4" files="5" classes="5"/>
+    <package name="middleware">
+      <metrics statements="28" coveredstatements="28" conditionals="12" coveredconditionals="12" methods="3" coveredmethods="3"/>
+      <file name="auth.js" path="E:\Projetos ALURA - Carreira IA Native\rotalog\rotalog-api-entregas\src\middleware\auth.js">
+        <metrics statements="20" coveredstatements="20" conditionals="10" coveredconditionals="10" methods="1" coveredmethods="1"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="2" count="1" type="stmt"/>
+        <line num="5" count="8" type="stmt"/>
+        <line num="6" count="8" type="cond" truecount="2" falsecount="0"/>
+        <line num="7" count="1" type="stmt"/>
+        <line num="8" count="1" type="stmt"/>
+        <line num="11" count="7" type="stmt"/>
+        <line num="12" count="7" type="cond" truecount="2" falsecount="0"/>
+        <line num="13" count="1" type="stmt"/>
+        <line num="16" count="6" type="stmt"/>
+        <line num="17" count="6" type="cond" truecount="4" falsecount="0"/>
+        <line num="18" count="2" type="stmt"/>
+        <line num="21" count="4" type="stmt"/>
+        <line num="22" count="4" type="stmt"/>
+        <line num="23" count="4" type="stmt"/>
+        <line num="24" count="2" type="stmt"/>
+        <line num="29" count="2" type="stmt"/>
+        <line num="31" count="2" type="stmt"/>
+        <line num="32" count="2" type="stmt"/>
+        <line num="36" count="1" type="stmt"/>
+      </file>
+      <file name="validar.js" path="E:\Projetos ALURA - Carreira IA Native\rotalog\rotalog-api-entregas\src\middleware\validar.js">
+        <metrics statements="8" coveredstatements="8" conditionals="2" coveredconditionals="2" methods="2" coveredmethods="2"/>
+        <line num="10" count="10" type="stmt"/>
+        <line num="11" count="28" type="stmt"/>
+        <line num="12" count="28" type="cond" truecount="2" falsecount="0"/>
+        <line num="13" count="7" type="stmt"/>
+        <line num="14" count="7" type="stmt"/>
+        <line num="16" count="21" type="stmt"/>
+        <line num="17" count="21" type="stmt"/>
+        <line num="21" count="2" type="stmt"/>
+      </file>
+    </package>
+    <package name="routes">
+      <metrics statements="60" coveredstatements="60" conditionals="4" coveredconditionals="4" methods="10" coveredmethods="10"/>
+      <file name="entregas.js" path="E:\Projetos ALURA - Carreira IA Native\rotalog\rotalog-api-entregas\src\routes\entregas.js">
+        <metrics statements="60" coveredstatements="60" conditionals="4" coveredconditionals="4" methods="10" coveredmethods="10"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="4" count="1" type="stmt"/>
+        <line num="5" count="1" type="stmt"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="12" count="1" type="stmt"/>
+        <line num="13" count="1" type="stmt"/>
+        <line num="14" count="1" type="stmt"/>
+        <line num="21" count="17" type="cond" truecount="2" falsecount="0"/>
+        <line num="22" count="8" type="stmt"/>
+        <line num="23" count="8" type="cond" truecount="2" falsecount="0"/>
+        <line num="24" count="2" type="stmt"/>
+        <line num="26" count="8" type="stmt"/>
+        <line num="28" count="9" type="stmt"/>
+        <line num="29" count="9" type="stmt"/>
+        <line num="35" count="1" type="stmt"/>
+        <line num="36" count="5" type="stmt"/>
+        <line num="37" count="5" type="stmt"/>
+        <line num="38" count="4" type="stmt"/>
+        <line num="40" count="1" type="stmt"/>
+        <line num="47" count="1" type="stmt"/>
+        <line num="48" count="2" type="stmt"/>
+        <line num="49" count="2" type="stmt"/>
+        <line num="50" count="1" type="stmt"/>
+        <line num="52" count="1" type="stmt"/>
+        <line num="59" count="1" type="stmt"/>
+        <line num="60" count="3" type="stmt"/>
+        <line num="61" count="3" type="stmt"/>
+        <line num="62" count="1" type="stmt"/>
+        <line num="64" count="2" type="stmt"/>
+        <line num="71" count="1" type="stmt"/>
+        <line num="72" count="3" type="stmt"/>
+        <line num="73" count="3" type="stmt"/>
+        <line num="74" count="1" type="stmt"/>
+        <line num="76" count="2" type="stmt"/>
+        <line num="83" count="1" type="stmt"/>
+        <line num="84" count="4" type="stmt"/>
+        <line num="85" count="4" type="stmt"/>
+        <line num="86" count="3" type="stmt"/>
+        <line num="88" count="1" type="stmt"/>
+        <line num="95" count="1" type="stmt"/>
+        <line num="96" count="3" type="stmt"/>
+        <line num="97" count="3" type="stmt"/>
+        <line num="98" count="1" type="stmt"/>
+        <line num="100" count="2" type="stmt"/>
+        <line num="107" count="1" type="stmt"/>
+        <line num="108" count="8" type="stmt"/>
+        <line num="109" count="8" type="stmt"/>
+        <line num="110" count="4" type="stmt"/>
+        <line num="112" count="4" type="stmt"/>
+        <line num="119" count="1" type="stmt"/>
+        <line num="120" count="3" type="stmt"/>
+        <line num="121" count="3" type="stmt"/>
+        <line num="122" count="1" type="stmt"/>
+        <line num="124" count="2" type="stmt"/>
+        <line num="131" count="1" type="stmt"/>
+        <line num="132" count="3" type="stmt"/>
+        <line num="133" count="3" type="stmt"/>
+        <line num="134" count="1" type="stmt"/>
+        <line num="136" count="2" type="stmt"/>
+        <line num="140" count="1" type="stmt"/>
+      </file>
+    </package>
+    <package name="schemas">
+      <metrics statements="7" coveredstatements="7" conditionals="3" coveredconditionals="3" methods="1" coveredmethods="1"/>
+      <file name="entregaSchemas.js" path="E:\Projetos ALURA - Carreira IA Native\rotalog\rotalog-api-entregas\src\schemas\entregaSchemas.js">
+        <metrics statements="7" coveredstatements="7" conditionals="3" coveredconditionals="3" methods="1" coveredmethods="1"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="5" count="1" type="stmt"/>
+        <line num="18" count="1" type="stmt"/>
+        <line num="25" count="1" type="stmt"/>
+        <line num="31" count="4" type="cond" truecount="3" falsecount="0"/>
+        <line num="38" count="1" type="stmt"/>
+        <line num="42" count="1" type="stmt"/>
+      </file>
+    </package>
+    <package name="services">
+      <metrics statements="112" coveredstatements="112" conditionals="64" coveredconditionals="64" methods="16" coveredmethods="16"/>
+      <file name="entregaService.js" path="E:\Projetos ALURA - Carreira IA Native\rotalog\rotalog-api-entregas\src\services\entregaService.js">
+        <metrics statements="112" coveredstatements="112" conditionals="64" coveredconditionals="64" methods="16" coveredmethods="16"/>
+        <line num="3" count="2" type="stmt"/>
+        <line num="4" count="2" type="stmt"/>
+        <line num="5" count="2" type="stmt"/>
+        <line num="6" count="2" type="stmt"/>
+        <line num="7" count="2" type="stmt"/>
+        <line num="13" count="2" type="stmt"/>
+        <line num="15" count="2" type="stmt"/>
+        <line num="23" count="2" type="stmt"/>
+        <line num="31" count="18" type="stmt"/>
+        <line num="32" count="18" type="stmt"/>
+        <line num="33" count="18" type="stmt"/>
+        <line num="34" count="18" type="cond" truecount="2" falsecount="0"/>
+        <line num="43" count="5" type="stmt"/>
+        <line num="51" count="9" type="cond" truecount="6" falsecount="0"/>
+        <line num="52" count="6" type="stmt"/>
+        <line num="55" count="3" type="stmt"/>
+        <line num="56" count="12" type="stmt"/>
+        <line num="58" count="3" type="stmt"/>
+        <line num="59" count="3" type="stmt"/>
+        <line num="62" count="3" type="stmt"/>
+        <line num="68" count="3" type="stmt"/>
+        <line num="69" count="3" type="stmt"/>
+        <line num="73" count="6" type="cond" truecount="2" falsecount="0"/>
+        <line num="74" count="4" type="stmt"/>
+        <line num="78" count="14" type="stmt"/>
+        <line num="79" count="14" type="cond" truecount="2" falsecount="0"/>
+        <line num="80" count="13" type="stmt"/>
+        <line num="88" count="4" type="stmt"/>
+        <line num="90" count="4" type="cond" truecount="2" falsecount="0"/>
+        <line num="91" count="1" type="stmt"/>
+        <line num="93" count="4" type="cond" truecount="2" falsecount="0"/>
+        <line num="94" count="1" type="stmt"/>
+        <line num="96" count="4" type="cond" truecount="2" falsecount="0"/>
+        <line num="97" count="1" type="stmt"/>
+        <line num="100" count="4" type="stmt"/>
+        <line num="115" count="2" type="stmt"/>
+        <line num="124" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="125" count="1" type="stmt"/>
+        <line num="127" count="1" type="stmt"/>
+        <line num="131" count="2" type="stmt"/>
+        <line num="132" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="133" count="1" type="stmt"/>
+        <line num="135" count="1" type="stmt"/>
+        <line num="139" count="1" type="stmt"/>
+        <line num="141" count="1" type="stmt"/>
+        <line num="152" count="2" type="stmt"/>
+        <line num="154" count="1" type="stmt"/>
+        <line num="171" count="2" type="stmt"/>
+        <line num="173" count="2" type="stmt"/>
+        <line num="174" count="2" type="stmt"/>
+        <line num="175" count="2" type="stmt"/>
+        <line num="177" count="2" type="stmt"/>
+        <line num="194" count="2" type="stmt"/>
+        <line num="201" count="2" type="stmt"/>
+        <line num="203" count="2" type="stmt"/>
+        <line num="205" count="2" type="stmt"/>
+        <line num="209" count="4" type="stmt"/>
+        <line num="210" count="4" type="cond" truecount="2" falsecount="0"/>
+        <line num="211" count="1" type="stmt"/>
+        <line num="214" count="3" type="stmt"/>
+        <line num="216" count="3" type="cond" truecount="2" falsecount="0"/>
+        <line num="217" count="3" type="cond" truecount="2" falsecount="0"/>
+        <line num="218" count="3" type="cond" truecount="2" falsecount="0"/>
+        <line num="219" count="3" type="cond" truecount="2" falsecount="0"/>
+        <line num="220" count="3" type="stmt"/>
+        <line num="222" count="3" type="stmt"/>
+        <line num="223" count="3" type="stmt"/>
+        <line num="227" count="5" type="stmt"/>
+        <line num="228" count="5" type="cond" truecount="2" falsecount="0"/>
+        <line num="229" count="1" type="stmt"/>
+        <line num="232" count="4" type="cond" truecount="2" falsecount="0"/>
+        <line num="233" count="1" type="stmt"/>
+        <line num="236" count="3" type="cond" truecount="2" falsecount="0"/>
+        <line num="237" count="1" type="stmt"/>
+        <line num="244" count="2" type="stmt"/>
+        <line num="245" count="2" type="stmt"/>
+        <line num="246" count="2" type="stmt"/>
+        <line num="248" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="249" count="1" type="stmt"/>
+        <line num="251" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="252" count="1" type="stmt"/>
+        <line num="255" count="2" type="stmt"/>
+        <line num="257" count="2" type="stmt"/>
+        <line num="264" count="2" type="stmt"/>
+        <line num="270" count="2" type="stmt"/>
+        <line num="272" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="273" count="1" type="stmt"/>
+        <line num="276" count="2" type="stmt"/>
+        <line num="280" count="3" type="stmt"/>
+        <line num="281" count="3" type="cond" truecount="2" falsecount="0"/>
+        <line num="282" count="1" type="stmt"/>
+        <line num="285" count="2" type="stmt"/>
+        <line num="287" count="2" type="stmt"/>
+        <line num="288" count="2" type="stmt"/>
+        <line num="289" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="290" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="291" count="2" type="stmt"/>
+        <line num="292" count="2" type="stmt"/>
+        <line num="294" count="2" type="stmt"/>
+        <line num="296" count="2" type="stmt"/>
+        <line num="303" count="2" type="stmt"/>
+        <line num="308" count="2" type="stmt"/>
+        <line num="312" count="2" type="stmt"/>
+        <line num="313" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="314" count="1" type="stmt"/>
+        <line num="317" count="1" type="stmt"/>
+        <line num="318" count="1" type="stmt"/>
+        <line num="320" count="1" type="stmt"/>
+        <line num="322" count="1" type="stmt"/>
+        <line num="329" count="1" type="stmt"/>
+        <line num="331" count="1" type="stmt"/>
+        <line num="334" count="2" type="stmt"/>
+      </file>
+    </package>
+  </project>
+</coverage>

@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>NotificacaoClient.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">RotaLog - API Frotas</a> &gt; <a href="index.source.html" class="el_package">com.rotalog.service</a> &gt; <span class="el_source">NotificacaoClient.java</span></div><h1>NotificacaoClient.java</h1><pre class="source lang-java linenums">package com.rotalog.service;
+
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
+import org.springframework.web.client.ResourceAccessException;
+import org.springframework.web.client.RestTemplate;
+
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * NotificacaoClient — HTTP client para a api-notificacoes.
+ *
+ * FIXME: Sem circuit breaker
+ * FIXME: Sem retry logic
+ * FIXME: Sem timeout configurável
+ * FIXME: RestTemplate instanciado manualmente em vez de ser Bean
+ */
+<span class="fc" id="L25">@Slf4j</span>
+@Component
+<span class="nc" id="L27">public class NotificacaoClient {</span>
+
+    /**
+     * Resultado de uma chamada à api-notificacoes.
+     * status: ENVIADA | FALHA | PENDENTE
+     * notificacaoId: id retornado pelo serviço (null quando PENDENTE/FALHA sem id)
+     */
+    @Getter
+    public static class NotificacaoResultado {
+        private final String status;
+        private final Long notificacaoId;
+
+<span class="fc" id="L39">        public NotificacaoResultado(String status, Long notificacaoId) {</span>
+<span class="fc" id="L40">            this.status = status;</span>
+<span class="fc" id="L41">            this.notificacaoId = notificacaoId;</span>
+<span class="fc" id="L42">        }</span>
+    }
+
+    @Value(&quot;${rotalog.api.notificacoes.url}&quot;)
+    private String notificacoesUrl;
+
+    // FIXME: RestTemplate criado manualmente — deveria ser @Bean injetado
+<span class="nc" id="L49">    private final RestTemplate restTemplate = new RestTemplate();</span>
+
+    /**
+     * Envia notificação para a api-notificacoes e retorna o resultado.
+     * Se o serviço estiver fora do ar (ResourceAccessException ou qualquer falha de conexão),
+     * retorna status=PENDENTE sem propagar a exceção (DoD: gravar e reprocessar depois).
+     */
+    public NotificacaoResultado enviarNotificacao(String tipo, String destinatario, String mensagem) {
+        try {
+<span class="nc" id="L58">            HttpHeaders headers = new HttpHeaders();</span>
+<span class="nc" id="L59">            headers.setContentType(MediaType.APPLICATION_JSON);</span>
+
+<span class="nc" id="L61">            Map&lt;String, String&gt; body = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L62">            body.put(&quot;tipo&quot;, tipo);</span>
+<span class="nc" id="L63">            body.put(&quot;destinatario&quot;, destinatario);</span>
+<span class="nc" id="L64">            body.put(&quot;mensagem&quot;, mensagem);</span>
+<span class="nc" id="L65">            body.put(&quot;canal&quot;, &quot;email&quot;); // FIXME: canal hardcoded</span>
+
+<span class="nc" id="L67">            HttpEntity&lt;Map&lt;String, String&gt;&gt; request = new HttpEntity&lt;&gt;(body, headers);</span>
+<span class="nc" id="L68">            String url = notificacoesUrl + &quot;/api/notificacoes&quot;;</span>
+
+<span class="nc" id="L70">            log.info(&quot;Enviando notificacao para {}: tipo={}, destinatario={}&quot;, url, tipo, destinatario);</span>
+
+<span class="nc" id="L72">            ResponseEntity&lt;Map&lt;String, Object&gt;&gt; response = restTemplate.postForEntity(url, request, (Class&lt;Map&lt;String, Object&gt;&gt;) (Class&lt;?&gt;) Map.class);</span>
+<span class="nc" id="L73">            Map&lt;String, Object&gt; responseBody = response.getBody();</span>
+
+<span class="nc bnc" id="L75" title="All 2 branches missed.">            String statusRaw = responseBody != null ? (String) responseBody.get(&quot;status&quot;) : null;</span>
+<span class="nc bnc" id="L76" title="All 2 branches missed.">            Object idObj = responseBody != null ? responseBody.get(&quot;id&quot;) : null;</span>
+<span class="nc bnc" id="L77" title="All 2 branches missed.">            Long notificacaoId = idObj != null ? Long.valueOf(idObj.toString()) : null;</span>
+
+            // Normaliza: api-notificacoes retorna &quot;ENVIADO&quot;, o domínio de alertas usa &quot;ENVIADA&quot;
+<span class="nc bnc" id="L80" title="All 2 branches missed.">            String statusNormalizado = &quot;ENVIADO&quot;.equalsIgnoreCase(statusRaw) ? &quot;ENVIADA&quot; : statusRaw;</span>
+<span class="nc bnc" id="L81" title="All 2 branches missed.">            if (statusNormalizado == null) {</span>
+<span class="nc" id="L82">                statusNormalizado = &quot;FALHA&quot;;</span>
+            }
+
+<span class="nc" id="L85">            log.info(&quot;Notificacao enviada: tipo={}, status={}, notificacaoId={}&quot;, tipo, statusNormalizado, notificacaoId);</span>
+<span class="nc" id="L86">            return new NotificacaoResultado(statusNormalizado, notificacaoId);</span>
+
+<span class="nc" id="L88">        } catch (ResourceAccessException e) {</span>
+<span class="nc" id="L89">            log.warn(&quot;api-notificacoes indisponivel (conexao recusada): tipo={}, erro={}&quot;, tipo, e.getMessage());</span>
+<span class="nc" id="L90">            return new NotificacaoResultado(&quot;PENDENTE&quot;, null);</span>
+<span class="nc" id="L91">        } catch (Exception e) {</span>
+<span class="nc" id="L92">            log.error(&quot;Erro ao enviar notificacao: tipo={}, erro={}&quot;, tipo, e.getMessage());</span>
+<span class="nc" id="L93">            return new NotificacaoResultado(&quot;PENDENTE&quot;, null);</span>
+        }
+    }
+
+    /**
+     * Envia notificacao SMS.
+     *
+     * FIXME: Codigo duplicado com enviarNotificacao
+     * FIXME: Deveria ser o mesmo metodo com canal diferente
+     */
+    public void enviarSms(String destinatario, String mensagem) {
+        try {
+<span class="nc" id="L105">            HttpHeaders headers = new HttpHeaders();</span>
+<span class="nc" id="L106">            headers.setContentType(MediaType.APPLICATION_JSON);</span>
+
+<span class="nc" id="L108">            Map&lt;String, String&gt; body = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L109">            body.put(&quot;tipo&quot;, &quot;SMS&quot;);</span>
+<span class="nc" id="L110">            body.put(&quot;destinatario&quot;, destinatario);</span>
+<span class="nc" id="L111">            body.put(&quot;mensagem&quot;, mensagem);</span>
+<span class="nc" id="L112">            body.put(&quot;canal&quot;, &quot;sms&quot;);</span>
+
+<span class="nc" id="L114">            HttpEntity&lt;Map&lt;String, String&gt;&gt; request = new HttpEntity&lt;&gt;(body, headers);</span>
+<span class="nc" id="L115">            String url = notificacoesUrl + &quot;/api/notificacoes&quot;;</span>
+<span class="nc" id="L116">            restTemplate.postForEntity(url, request, String.class);</span>
+<span class="nc" id="L117">        } catch (Exception e) {</span>
+<span class="nc" id="L118">            log.error(&quot;Erro ao enviar SMS: {}&quot;, e.getMessage());</span>
+<span class="nc" id="L119">        }</span>
+<span class="nc" id="L120">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

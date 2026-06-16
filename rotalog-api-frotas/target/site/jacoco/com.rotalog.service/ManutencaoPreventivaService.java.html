@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ManutencaoPreventivaService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">RotaLog - API Frotas</a> &gt; <a href="index.source.html" class="el_package">com.rotalog.service</a> &gt; <span class="el_source">ManutencaoPreventivaService.java</span></div><h1>ManutencaoPreventivaService.java</h1><pre class="source lang-java linenums">package com.rotalog.service;
+
+import com.rotalog.domain.AlertaManutencao;
+import com.rotalog.domain.Manutencao;
+import com.rotalog.domain.Veiculo;
+import com.rotalog.repository.AlertaManutencaoRepository;
+import com.rotalog.repository.ManutencaoRepository;
+import com.rotalog.repository.VeiculoRepository;
+import com.rotalog.service.NotificacaoClient.NotificacaoResultado;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
+/**
+ * ManutencaoPreventivaService — regras de manutenção preventiva de veículos.
+ *
+ * Dispara alerta quando KM percorrida desde a baseline &gt;= intervalo-km
+ * OU quando tempo desde a baseline &gt;= intervalo-meses (o que vier primeiro).
+ * A baseline é o mais recente entre a última manutenção CONCLUIDA e o último alerta disparado.
+ * Ao disparar, grava um AlertaManutencao que vira a nova baseline (reset dos contadores).
+ */
+<span class="fc" id="L29">@Slf4j</span>
+@Component
+<span class="fc" id="L31">public class ManutencaoPreventivaService {</span>
+
+    @Autowired
+    private ManutencaoRepository manutencaoRepository;
+
+    @Autowired
+    private AlertaManutencaoRepository alertaManutencaoRepository;
+
+    @Autowired
+    private VeiculoRepository veiculoRepository;
+
+    @Autowired
+    private VeiculoNotificacaoService notificacaoService;
+
+    @Value(&quot;${rotalog.manutencao.intervalo-km:10000}&quot;)
+    private long intervaloKm;
+
+    @Value(&quot;${rotalog.manutencao.intervalo-meses:6}&quot;)
+    private long intervaloMeses;
+
+    // -------------------------------------------------------------------------
+    // API pública
+    // -------------------------------------------------------------------------
+
+    /**
+     * Verifica se o veículo deve receber um alerta e, em caso positivo, grava o alerta
+     * e envia a notificação. Retorna o alerta gravado, ou vazio se não disparou.
+     */
+    public Optional&lt;AlertaManutencao&gt; verificarEAlertar(Veiculo veiculo) {
+<span class="fc" id="L60">        AvaliacaoResultado avaliacao = avaliar(veiculo);</span>
+<span class="fc bfc" id="L61" title="All 2 branches covered.">        if (!avaliacao.deveDisparar) {</span>
+<span class="fc" id="L62">            log.debug(&quot;Veiculo {} nao precisa de alerta de manutencao no momento.&quot;, veiculo.getPlaca());</span>
+<span class="fc" id="L63">            return Optional.empty();</span>
+        }
+
+<span class="fc" id="L66">        log.info(&quot;Disparando alerta de manutencao para veiculo {} por motivo={}&quot;, veiculo.getPlaca(), avaliacao.motivo);</span>
+
+        // (1) Grava com PENDENTE — a baseline fica registrada mesmo se a notificacao falhar
+<span class="fc" id="L69">        AlertaManutencao alerta = new AlertaManutencao();</span>
+<span class="fc" id="L70">        alerta.setVeiculoId(veiculo.getId());</span>
+<span class="fc" id="L71">        alerta.setQuilometragemAlerta(veiculo.getQuilometragem());</span>
+<span class="fc" id="L72">        alerta.setMotivo(avaliacao.motivo);</span>
+<span class="fc" id="L73">        alerta.setDataAlerta(LocalDateTime.now());</span>
+<span class="fc" id="L74">        alerta.setStatusNotificacao(&quot;PENDENTE&quot;);</span>
+<span class="fc" id="L75">        alerta.setDataCriacao(LocalDateTime.now());</span>
+<span class="fc" id="L76">        alerta = alertaManutencaoRepository.save(alerta);</span>
+
+        // (2) Envia notificacao
+<span class="fc" id="L79">        NotificacaoResultado resultado = notificacaoService.notificarAlertaManutencao(</span>
+<span class="fc" id="L80">                veiculo, veiculo.getQuilometragem(), avaliacao.motivo);</span>
+
+        // (3) Atualiza status e id
+<span class="fc" id="L83">        alerta.setStatusNotificacao(resultado.getStatus());</span>
+<span class="fc" id="L84">        alerta.setNotificacaoId(resultado.getNotificacaoId());</span>
+<span class="fc" id="L85">        alerta = alertaManutencaoRepository.save(alerta);</span>
+
+<span class="fc" id="L87">        log.info(&quot;Alerta id={} gravado com statusNotificacao={} para veiculo {}&quot;,</span>
+<span class="fc" id="L88">                alerta.getId(), alerta.getStatusNotificacao(), veiculo.getPlaca());</span>
+
+<span class="fc" id="L90">        return Optional.of(alerta);</span>
+    }
+
+    /**
+     * Reenvia alertas com status PENDENTE ou FALHA.
+     * Usado pelo scheduler para recuperar quando a api-notificacoes voltar.
+     */
+    public void reprocessarPendentes() {
+<span class="fc" id="L98">        List&lt;AlertaManutencao&gt; pendentes = alertaManutencaoRepository</span>
+<span class="fc" id="L99">                .findByStatusNotificacaoIn(Arrays.asList(&quot;PENDENTE&quot;, &quot;FALHA&quot;));</span>
+
+<span class="fc bfc" id="L101" title="All 2 branches covered.">        if (pendentes.isEmpty()) {</span>
+<span class="fc" id="L102">            log.debug(&quot;Nenhum alerta pendente para reprocessar.&quot;);</span>
+<span class="fc" id="L103">            return;</span>
+        }
+
+<span class="fc" id="L106">        log.info(&quot;Reprocessando {} alerta(s) pendente(s)/falha...&quot;, pendentes.size());</span>
+
+<span class="fc bfc" id="L108" title="All 2 branches covered.">        for (AlertaManutencao alerta : pendentes) {</span>
+<span class="fc" id="L109">            Optional&lt;Veiculo&gt; veiculoOpt = veiculoRepository.findById(alerta.getVeiculoId());</span>
+<span class="fc bfc" id="L110" title="All 2 branches covered.">            if (veiculoOpt.isEmpty()) {</span>
+<span class="fc" id="L111">                log.warn(&quot;Veiculo id={} nao encontrado para alerta id={}&quot;, alerta.getVeiculoId(), alerta.getId());</span>
+<span class="fc" id="L112">                continue;</span>
+            }
+<span class="fc" id="L114">            Veiculo veiculo = veiculoOpt.get();</span>
+
+<span class="fc" id="L116">            NotificacaoResultado resultado = notificacaoService.notificarAlertaManutencao(</span>
+<span class="fc" id="L117">                    veiculo, alerta.getQuilometragemAlerta(), alerta.getMotivo());</span>
+
+<span class="fc" id="L119">            alerta.setStatusNotificacao(resultado.getStatus());</span>
+<span class="fc" id="L120">            alerta.setNotificacaoId(resultado.getNotificacaoId());</span>
+<span class="fc" id="L121">            alertaManutencaoRepository.save(alerta);</span>
+
+<span class="fc" id="L123">            log.info(&quot;Alerta id={} reprocessado: statusNotificacao={}&quot;, alerta.getId(), resultado.getStatus());</span>
+<span class="fc" id="L124">        }</span>
+<span class="fc" id="L125">    }</span>
+
+    /**
+     * Calcula custo estimado de manutenção com base no modelo e na quilometragem.
+     */
+    public Double calcularCustoManutencao(String modelo, Long quilometragem) {
+<span class="fc" id="L131">        Double custoPorKm = 0.05;</span>
+<span class="fc" id="L132">        Double custoBase = 500.0;</span>
+<span class="fc" id="L133">        return custoBase + (quilometragem * custoPorKm);</span>
+    }
+
+    // -------------------------------------------------------------------------
+    // Lógica interna
+    // -------------------------------------------------------------------------
+
+    private AvaliacaoResultado avaliar(Veiculo veiculo) {
+<span class="fc" id="L141">        Baseline baseline = resolverBaseline(veiculo);</span>
+
+<span class="fc bfc" id="L143" title="All 2 branches covered.">        long kmAtual = veiculo.getQuilometragem() != null ? veiculo.getQuilometragem() : 0L;</span>
+<span class="fc" id="L144">        long kmPercorrido = kmAtual - baseline.km;</span>
+<span class="fc" id="L145">        long mesesDecorridos = ChronoUnit.MONTHS.between(baseline.data, LocalDateTime.now());</span>
+
+<span class="fc" id="L147">        log.debug(&quot;Veiculo {}: kmPercorrido={}, mesesDecorridos={}, intervaloKm={}, intervaloMeses={}&quot;,</span>
+<span class="fc" id="L148">                veiculo.getPlaca(), kmPercorrido, mesesDecorridos, intervaloKm, intervaloMeses);</span>
+
+<span class="fc bfc" id="L150" title="All 2 branches covered.">        if (kmPercorrido &gt;= intervaloKm) {</span>
+<span class="fc" id="L151">            return new AvaliacaoResultado(true, &quot;KM&quot;);</span>
+        }
+<span class="fc bfc" id="L153" title="All 2 branches covered.">        if (mesesDecorridos &gt;= intervaloMeses) {</span>
+<span class="fc" id="L154">            return new AvaliacaoResultado(true, &quot;TEMPO&quot;);</span>
+        }
+<span class="fc" id="L156">        return new AvaliacaoResultado(false, null);</span>
+    }
+
+    /**
+     * Resolve a baseline: mais recente entre última manutenção CONCLUIDA e último alerta.
+     * Fallback: km=0, data=veiculo.dataCadastro.
+     */
+    private Baseline resolverBaseline(Veiculo veiculo) {
+<span class="fc bfc" id="L164" title="All 2 branches covered.">        LocalDateTime dataFallback = veiculo.getDataCadastro() != null</span>
+<span class="fc" id="L165">                ? veiculo.getDataCadastro()</span>
+<span class="fc" id="L166">                : LocalDateTime.now().minusYears(10);</span>
+
+        // Última manutenção CONCLUIDA
+<span class="fc" id="L169">        Manutencao ultimaManutencao = manutencaoRepository.findUltimaManutencaoConcluida(veiculo.getId());</span>
+<span class="fc bfc" id="L170" title="All 2 branches covered.">        LocalDateTime dataManutencao = ultimaManutencao != null ? ultimaManutencao.getDataManutencao() : null;</span>
+<span class="pc bpc" id="L171" title="1 of 4 branches missed.">        long kmManutencao = (ultimaManutencao != null &amp;&amp; ultimaManutencao.getQuilometragemManutencao() != null)</span>
+<span class="fc" id="L172">                ? ultimaManutencao.getQuilometragemManutencao() : 0L;</span>
+
+        // Último alerta disparado
+<span class="fc" id="L175">        Optional&lt;AlertaManutencao&gt; ultimoAlertaOpt = alertaManutencaoRepository</span>
+<span class="fc" id="L176">                .findFirstByVeiculoIdOrderByDataAlertaDesc(veiculo.getId());</span>
+<span class="fc" id="L177">        LocalDateTime dataAlerta = ultimoAlertaOpt.map(AlertaManutencao::getDataAlerta).orElse(null);</span>
+<span class="fc" id="L178">        long kmAlerta = ultimoAlertaOpt</span>
+<span class="pc bpc" id="L179" title="1 of 2 branches missed.">                .map(a -&gt; a.getQuilometragemAlerta() != null ? a.getQuilometragemAlerta() : 0L)</span>
+<span class="fc" id="L180">                .orElse(0L);</span>
+
+        // Mais recente entre manutenção e alerta
+<span class="fc bfc" id="L183" title="All 4 branches covered.">        if (dataManutencao == null &amp;&amp; dataAlerta == null) {</span>
+<span class="fc" id="L184">            return new Baseline(0L, dataFallback);</span>
+        }
+<span class="fc bfc" id="L186" title="All 2 branches covered.">        if (dataManutencao == null) {</span>
+<span class="fc" id="L187">            return new Baseline(kmAlerta, dataAlerta);</span>
+        }
+<span class="fc bfc" id="L189" title="All 2 branches covered.">        if (dataAlerta == null) {</span>
+<span class="fc" id="L190">            return new Baseline(kmManutencao, dataManutencao);</span>
+        }
+        // Ambos existem: usa o mais recente
+<span class="fc bfc" id="L193" title="All 2 branches covered.">        if (dataAlerta.isAfter(dataManutencao)) {</span>
+<span class="fc" id="L194">            return new Baseline(kmAlerta, dataAlerta);</span>
+        }
+<span class="fc" id="L196">        return new Baseline(kmManutencao, dataManutencao);</span>
+    }
+
+    // -------------------------------------------------------------------------
+    // Tipos auxiliares internos
+    // -------------------------------------------------------------------------
+
+    private static class Baseline {
+        final long km;
+        final LocalDateTime data;
+
+<span class="fc" id="L207">        Baseline(long km, LocalDateTime data) {</span>
+<span class="fc" id="L208">            this.km = km;</span>
+<span class="fc" id="L209">            this.data = data;</span>
+<span class="fc" id="L210">        }</span>
+    }
+
+    private static class AvaliacaoResultado {
+        final boolean deveDisparar;
+        final String motivo;
+
+<span class="fc" id="L217">        AvaliacaoResultado(boolean deveDisparar, String motivo) {</span>
+<span class="fc" id="L218">            this.deveDisparar = deveDisparar;</span>
+<span class="fc" id="L219">            this.motivo = motivo;</span>
+<span class="fc" id="L220">        }</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

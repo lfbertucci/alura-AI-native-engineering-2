@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:14
+    container_name: rotalog-db
+    environment:
+      POSTGRES_USER: rotalog_admin
+      POSTGRES_PASSWORD: rotalog123
+      POSTGRES_DB: rotalog
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./tools/scripts/init-schemas.sql:/docker-entrypoint-initdb.d/01-init.sql
+      - ./tools/scripts/02-migration-frotas.sql:/docker-entrypoint-initdb.d/02-migration-frotas.sql
+      - ./tools/scripts/03-migration-entregas.sql:/docker-entrypoint-initdb.d/03-migration-entregas.sql
+      - ./tools/scripts/04-migration-notificacoes.sql:/docker-entrypoint-initdb.d/04-migration-notificacoes.sql
+      - ./tools/scripts/05-seed-frotas.sql:/docker-entrypoint-initdb.d/05-seed-frotas.sql
+      - ./tools/scripts/06-seed-entregas.sql:/docker-entrypoint-initdb.d/06-seed-entregas.sql
+      - ./tools/scripts/07-seed-notificacoes.sql:/docker-entrypoint-initdb.d/07-seed-notificacoes.sql
+      - ./tools/scripts/08-add-motorista-veiculo-info.sql:/docker-entrypoint-initdb.d/08-add-motorista-veiculo-info.sql
+      - ./tools/scripts/09-add-alertas-manutencao.sql:/docker-entrypoint-initdb.d/09-add-alertas-manutencao.sql
+      - ./tools/scripts/10-seed-alertas-elegiveis.sql:/docker-entrypoint-initdb.d/10-seed-alertas-elegiveis.sql
+    networks:
+      - rotalog-network
+    # TODO: Add health checks
+    # TODO: Add resource limits
+    # TODO: Add backup strategy
+
+  # TODO: Add Redis service
+  # TODO: Add Kafka service
+  # TODO: Add Elasticsearch service
+  # TODO: Add Prometheus service
+  # TODO: Add Grafana service
+
+volumes:
+  pgdata:
+
+networks:
+  rotalog-network:
+    driver: bridge
+
+# FIXME: No service containers
+# FIXME: No health checks
+# FIXME: Password in compose file
+# FIXME: TODO comments never implemented

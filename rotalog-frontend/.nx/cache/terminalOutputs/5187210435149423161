@@ -1,0 +1,9 @@
+
+Linting "painel-admin"...
+
+[0m[7m[1m[31m NX [39m[22m[27m[0m  [31mCannot read properties of undefined (reading 'at')[39m
+
+Occurred while linting E:\Projetos ALURA - Carreira IA Native\rotalog\rotalog-frontend\apps\painel-admin\src\app\app.component.html:1
+Rule: "@typescript-eslint/ban-ts-comment"
+Pass --verbose to see the stacktrace.
+

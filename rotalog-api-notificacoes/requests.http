@@ -1,0 +1,251 @@
+### RotaLog - API Notificações - HTTP Requests para testes
+### Usar com REST Client (VS Code) ou similar
+
+### ===========================================
+### HEALTH CHECK
+### ===========================================
+
+### Health Check (inclui status dos schemas frotas e entregas)
+GET http://localhost:5000/api/health
+
+### ===========================================
+### NOTIFICAÇÕES - CRUD
+### ===========================================
+
+### Listar todas as notificações
+GET http://localhost:5000/api/notificacoes
+
+### Listar por tipo
+GET http://localhost:5000/api/notificacoes?tipo=ENTREGA_CRIADA
+
+### Listar por status
+GET http://localhost:5000/api/notificacoes?status=ENVIADO
+
+### Listar por canal
+GET http://localhost:5000/api/notificacoes?canal=email
+
+### Listar por serviço de origem
+GET http://localhost:5000/api/notificacoes?servicoOrigem=api-frotas
+
+### Listar com múltiplos filtros
+GET http://localhost:5000/api/notificacoes?tipo=ENTREGA_CRIADA&status=ENVIADO&servicoOrigem=api-entregas
+
+### Buscar notificação por ID
+GET http://localhost:5000/api/notificacoes/1
+
+### Estatísticas de notificações
+GET http://localhost:5000/api/notificacoes/stats
+
+### ===========================================
+### CRIAR NOTIFICAÇÕES (como api-frotas e api-entregas fazem)
+### ===========================================
+
+### Criar notificação simples (mensagem direta)
+POST http://localhost:5000/api/notificacoes
+Content-Type: application/json
+
+{
+    "tipo": "VEICULO_CADASTRADO",
+    "canal": "email",
+    "destinatario": "operacao@rotalog.com",
+    "mensagem": "Novo veículo cadastrado: XYZ9A99 - Mercedes Sprinter 2024",
+    "assunto": "Novo veículo cadastrado: XYZ9A99",
+    "servicoOrigem": "api-frotas",
+    "referenciaId": "veiculo-11"
+}
+
+### Criar notificação com template (usando variáveis)
+POST http://localhost:5000/api/notificacoes
+Content-Type: application/json
+
+{
+    "tipo": "ENTREGA_CRIADA",
+    "canal": "email",
+    "destinatario": "operacao@rotalog.com",
+    "mensagem": "",
+    "servicoOrigem": "api-entregas",
+    "referenciaId": "entrega-11",
+    "variaveis": {
+        "numero_pedido": "PED-2024-011",
+        "origem": "Rua Augusta, 1500 - São Paulo",
+        "destino": "Av. Paulista, 2000 - São Paulo"
+    }
+}
+
+### Criar notificação de status de entrega
+POST http://localhost:5000/api/notificacoes
+Content-Type: application/json
+
+{
+    "tipo": "STATUS_ENTREGA",
+    "canal": "email",
+    "destinatario": "operacao@rotalog.com",
+    "mensagem": "",
+    "servicoOrigem": "api-entregas",
+    "referenciaId": "entrega-3",
+    "variaveis": {
+        "numero_pedido": "PED-2024-003",
+        "status_anterior": "EM_TRANSITO",
+        "status_novo": "ENTREGUE"
+    }
+}
+
+### Criar notificação de entrega concluída (para cliente)
+POST http://localhost:5000/api/notificacoes
+Content-Type: application/json
+
+{
+    "tipo": "ENTREGA_CONCLUIDA",
+    "canal": "email",
+    "destinatario": "cliente@exemplo.com",
+    "mensagem": "",
+    "servicoOrigem": "api-entregas",
+    "referenciaId": "entrega-3",
+    "variaveis": {
+        "numero_pedido": "PED-2024-003",
+        "destino": "Av. Faria Lima, 3000 - São Paulo",
+        "data_entrega": "2024-03-15 14:30"
+    }
+}
+
+### Criar notificação de alerta de manutenção
+POST http://localhost:5000/api/notificacoes
+Content-Type: application/json
+
+{
+    "tipo": "MANUTENCAO_AGENDADA",
+    "canal": "email",
+    "destinatario": "frota@rotalog.com",
+    "mensagem": "",
+    "servicoOrigem": "api-frotas",
+    "referenciaId": "manutencao-5",
+    "variaveis": {
+        "placa": "ABC1D23",
+        "tipo_manutencao": "Troca de óleo",
+        "data_agendada": "2024-04-20",
+        "descricao": "Troca de óleo e filtros - 40.000km"
+    }
+}
+
+### Criar notificação de CNH vencida
+POST http://localhost:5000/api/notificacoes
+Content-Type: application/json
+
+{
+    "tipo": "CNH_VENCIDA",
+    "canal": "email",
+    "destinatario": "rh@rotalog.com",
+    "mensagem": "",
+    "servicoOrigem": "api-frotas",
+    "referenciaId": "motorista-4",
+    "variaveis": {
+        "nome": "Pedro Santos",
+        "data_vencimento": "2024-01-15",
+        "numero_cnh": "12345678901"
+    }
+}
+
+### Criar notificação SMS
+POST http://localhost:5000/api/notificacoes
+Content-Type: application/json
+
+{
+    "tipo": "ALERTA_MANUTENCAO",
+    "canal": "sms",
+    "destinatario": "+5511999990001",
+    "mensagem": "",
+    "servicoOrigem": "api-frotas",
+    "referenciaId": "manutencao-6",
+    "variaveis": {
+        "placa": "DEF4G56",
+        "data_agendada": "2024-04-25"
+    }
+}
+
+### Criar notificação de entrega atrasada
+POST http://localhost:5000/api/notificacoes
+Content-Type: application/json
+
+{
+    "tipo": "ENTREGA_ATRASADA",
+    "canal": "email",
+    "destinatario": "gestor@rotalog.com",
+    "mensagem": "",
+    "servicoOrigem": "api-entregas",
+    "referenciaId": "entrega-7",
+    "variaveis": {
+        "numero_pedido": "PED-2024-007",
+        "destino": "Rua Funchal, 400 - São Paulo",
+        "tempo_estimado": "10"
+    }
+}
+
+### ===========================================
+### REENVIO E PROCESSAMENTO
+### ===========================================
+
+### Reenviar notificação que falhou
+POST http://localhost:5000/api/notificacoes/8/reenviar
+Content-Type: application/json
+
+{
+    "novoDestinatario": null,
+    "novoCanal": null
+}
+
+### Reenviar para outro destinatário
+POST http://localhost:5000/api/notificacoes/8/reenviar
+Content-Type: application/json
+
+{
+    "novoDestinatario": "backup@rotalog.com",
+    "novoCanal": "email"
+}
+
+### Processar notificações pendentes (batch)
+POST http://localhost:5000/api/notificacoes/processar
+
+### ===========================================
+### TEMPLATES
+### ===========================================
+
+### Listar todos os templates
+GET http://localhost:5000/api/notificacoes/templates
+
+### Listar apenas templates ativos
+GET http://localhost:5000/api/notificacoes/templates?apenasAtivos=true
+
+### ===========================================
+### FLUXO COMPLETO: Simulando integração api-frotas → api-notificacoes
+### ===========================================
+
+### 1. api-frotas cadastra veículo e notifica
+POST http://localhost:5000/api/notificacoes
+Content-Type: application/json
+
+{
+    "tipo": "VEICULO_CADASTRADO",
+    "canal": "email",
+    "destinatario": "operacao@rotalog.com",
+    "mensagem": "",
+    "servicoOrigem": "api-frotas",
+    "referenciaId": "veiculo-12",
+    "variaveis": {
+        "placa": "NEW1X99",
+        "modelo": "Volkswagen Delivery 11.180",
+        "ano": "2024"
+    }
+}
+
+### 2. Verificar se notificação foi enviada
+GET http://localhost:5000/api/notificacoes?servicoOrigem=api-frotas&tipo=VEICULO_CADASTRADO
+
+### 3. Verificar estatísticas atualizadas
+GET http://localhost:5000/api/notificacoes/stats
+
+### ===========================================
+### SWAGGER UI
+### ===========================================
+
+### Acessar Swagger UI no navegador:
+### http://localhost:5000/swagger

@@ -1,0 +1,21 @@
+{
+  "run": {
+    "command": "nx build painel-admin",
+    "startTime": "2026-06-15T01:35:39.383Z",
+    "endTime": "2026-06-15T01:35:43.007Z",
+    "inner": false
+  },
+  "tasks": [
+    {
+      "taskId": "painel-admin:build:production",
+      "target": "build",
+      "projectName": "painel-admin",
+      "hash": "7907988629601939287",
+      "startTime": "2026-06-15T01:35:39.394Z",
+      "endTime": "2026-06-15T01:35:43.006Z",
+      "params": "",
+      "cacheStatus": "cache-miss",
+      "status": 0
+    }
+  ]
+}

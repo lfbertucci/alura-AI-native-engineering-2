@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ManutencaoController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">RotaLog - API Frotas</a> &gt; <a href="index.source.html" class="el_package">com.rotalog.controller</a> &gt; <span class="el_source">ManutencaoController.java</span></div><h1>ManutencaoController.java</h1><pre class="source lang-java linenums">package com.rotalog.controller;
+
+import com.rotalog.domain.Manutencao;
+import com.rotalog.dto.ManutencaoRequest;
+import com.rotalog.service.ManutencaoService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * ManutencaoController - REST controller para gerenciamento de manutenções
+ * 
+ * FIXME: Mesmo padrão copy-paste de tratamento de erro
+ * FIXME: Sem @ControllerAdvice
+ */
+<span class="fc" id="L23">@Slf4j</span>
+@RestController
+@RequestMapping(&quot;/manutencoes&quot;)
+<span class="fc" id="L26">public class ManutencaoController {</span>
+
+    @Autowired
+    private ManutencaoService manutencaoService;
+
+    @GetMapping
+    public ResponseEntity&lt;List&lt;Manutencao&gt;&gt; listarTodas() {
+<span class="fc" id="L33">        return ResponseEntity.ok(manutencaoService.listarTodas());</span>
+    }
+
+    @GetMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;?&gt; buscarPorId(@PathVariable Long id) {
+        try {
+<span class="fc" id="L39">            return ResponseEntity.ok(manutencaoService.buscarPorId(id));</span>
+<span class="fc" id="L40">        } catch (RuntimeException e) {</span>
+<span class="fc" id="L41">            Map&lt;String, String&gt; error = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L42">            error.put(&quot;erro&quot;, e.getMessage());</span>
+<span class="fc" id="L43">            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);</span>
+        }
+    }
+
+    @GetMapping(&quot;/veiculo/{veiculoId}&quot;)
+    public ResponseEntity&lt;List&lt;Manutencao&gt;&gt; listarPorVeiculo(@PathVariable Long veiculoId) {
+<span class="fc" id="L49">        return ResponseEntity.ok(manutencaoService.listarPorVeiculo(veiculoId));</span>
+    }
+
+    @GetMapping(&quot;/pendentes&quot;)
+    public ResponseEntity&lt;List&lt;Manutencao&gt;&gt; listarPendentes() {
+<span class="fc" id="L54">        return ResponseEntity.ok(manutencaoService.listarPendentes());</span>
+    }
+
+    @GetMapping(&quot;/veiculo/{veiculoId}/ultima&quot;)
+    public ResponseEntity&lt;?&gt; obterUltimaManutencao(@PathVariable Long veiculoId) {
+        try {
+<span class="fc" id="L60">            return ResponseEntity.ok(manutencaoService.obterUltimaManutencao(veiculoId));</span>
+<span class="fc" id="L61">        } catch (RuntimeException e) {</span>
+<span class="fc" id="L62">            Map&lt;String, String&gt; error = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L63">            error.put(&quot;erro&quot;, e.getMessage());</span>
+<span class="fc" id="L64">            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);</span>
+        }
+    }
+
+    @PostMapping
+    public ResponseEntity&lt;?&gt; agendarManutencao(@RequestBody ManutencaoRequest request) {
+        try {
+<span class="fc" id="L71">            Manutencao manutencao = manutencaoService.agendarManutencao(</span>
+<span class="fc" id="L72">                request.getVeiculoId(),</span>
+<span class="fc" id="L73">                request.getTipoManutencao(),</span>
+<span class="fc" id="L74">                request.getDescricao(),</span>
+<span class="fc" id="L75">                request.getCustoEstimado()</span>
+            );
+<span class="fc" id="L77">            return ResponseEntity.status(HttpStatus.CREATED).body(manutencao);</span>
+<span class="fc" id="L78">        } catch (RuntimeException e) {</span>
+<span class="fc" id="L79">            Map&lt;String, String&gt; error = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L80">            error.put(&quot;erro&quot;, e.getMessage());</span>
+<span class="fc" id="L81">            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);</span>
+        }
+    }
+
+    @PatchMapping(&quot;/{id}/iniciar&quot;)
+    public ResponseEntity&lt;?&gt; iniciarManutencao(@PathVariable Long id) {
+        try {
+<span class="fc" id="L88">            return ResponseEntity.ok(manutencaoService.iniciarManutencao(id));</span>
+<span class="fc" id="L89">        } catch (RuntimeException e) {</span>
+<span class="fc" id="L90">            Map&lt;String, String&gt; error = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L91">            error.put(&quot;erro&quot;, e.getMessage());</span>
+<span class="fc" id="L92">            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);</span>
+        }
+    }
+
+    @PatchMapping(&quot;/{id}/concluir&quot;)
+    public ResponseEntity&lt;?&gt; concluirManutencao(@PathVariable Long id, @RequestBody Map&lt;String, Object&gt; body) {
+        try {
+<span class="fc" id="L99">            BigDecimal custoFinal = null;</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">            if (body.containsKey(&quot;custoFinal&quot;)) {</span>
+<span class="fc" id="L101">                custoFinal = new BigDecimal(body.get(&quot;custoFinal&quot;).toString());</span>
+            }
+<span class="fc" id="L103">            return ResponseEntity.ok(manutencaoService.concluirManutencao(id, custoFinal));</span>
+<span class="fc" id="L104">        } catch (RuntimeException e) {</span>
+<span class="fc" id="L105">            Map&lt;String, String&gt; error = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L106">            error.put(&quot;erro&quot;, e.getMessage());</span>
+<span class="fc" id="L107">            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);</span>
+        }
+    }
+
+    @PatchMapping(&quot;/{id}/cancelar&quot;)
+    public ResponseEntity&lt;?&gt; cancelarManutencao(@PathVariable Long id) {
+        try {
+<span class="fc" id="L114">            return ResponseEntity.ok(manutencaoService.cancelarManutencao(id));</span>
+<span class="fc" id="L115">        } catch (RuntimeException e) {</span>
+<span class="fc" id="L116">            Map&lt;String, String&gt; error = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L117">            error.put(&quot;erro&quot;, e.getMessage());</span>
+<span class="fc" id="L118">            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
